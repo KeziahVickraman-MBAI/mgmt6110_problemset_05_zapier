@@ -120,7 +120,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 /* Tab 2: trigger / action sheet */
 .sheet-intro { margin: 0; color: var(--muted); max-width: 75ch; }
 .sheet { display: grid; gap: 10px; overflow: auto; flex: 1; min-height: 0; padding-right: 4px; }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1.2fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; }
 .row.person { border-left: 5px solid var(--person-edge); }
 .row.ai { border-left: 5px solid var(--ai-edge); }
 .row.none { border-left: 5px dashed var(--line); }
@@ -224,7 +224,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     "Government · Draft a policy"
   ];
   let items = load(KEY) || [];
-  items.forEach(i => { i.trigger ??= ""; i.action ??= ""; });
+  items.forEach(i => { i.trigger ??= ""; i.action ??= ""; i.why ??= ""; });
   let picked = null;
   const $ = id => document.getElementById(id);
   const teamInput = $("team");
@@ -302,7 +302,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   function loadExamples() {
     const have = new Set(items.map(i => i.text.toLowerCase()));
     const fresh = SAMPLE.filter(t => !have.has(t.toLowerCase()));
-    fresh.forEach((text, n) => items.push({ id: "s" + Date.now() + "_" + n, text, zone: "tray", trigger: "", action: "" }));
+    fresh.forEach((text, n) => items.push({ id: "s" + Date.now() + "_" + n, text, zone: "tray", trigger: "", action: "", why: "" }));
     render();
     if (!$("panel-trigger").hidden) renderSheet();
     $("msg").textContent = fresh.length
@@ -353,7 +353,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     e.preventDefault();
     const inp = $("problem"), text = inp.value.trim();
     if (!text) { inp.focus(); return; }
-    items.push({ id: "u" + Date.now(), text, zone: "tray", trigger: "", action: "" });
+    items.push({ id: "u" + Date.now(), text, zone: "tray", trigger: "", action: "", why: "" });
     inp.value = ""; inp.focus(); render();
   });
   $("examples").addEventListener("click", loadExamples);
@@ -391,7 +391,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       p.append(s, b);
       row.append(p,
         field(it, "trigger", "Trigger", "When… e.g. a new loan file is uploaded"),
-        field(it, "action", "Action", "Then… e.g. AI checks documents, an officer signs off"));
+        field(it, "action", "Action", "Then… e.g. AI checks documents, an officer signs off"),
+        field(it, "why", "Why is it in this quadrant?", "Because… e.g. there is a right answer, but a person must own the decision"));
       sheet.append(row);
     }
   }
@@ -403,7 +404,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     const team = teamInput.value.trim();
     const data = {
       app: "who-leads-the-work", version: 1, exportedAt: new Date().toISOString(), team,
-      items: items.map(({ text, zone, trigger, action }) => ({ text, zone, trigger, action }))
+      items: items.map(({ text, zone, trigger, action, why }) => ({ text, zone, trigger, action, why }))
     };
     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
     const a = document.createElement("a");
@@ -429,7 +430,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
           id: "i" + Date.now() + "_" + n,
           text: str(i.text).trim().slice(0, 90),
           zone: i.zone in ZONES ? i.zone : "tray",
-          trigger: str(i.trigger), action: str(i.action)
+          trigger: str(i.trigger), action: str(i.action), why: str(i.why)
         }));
       items = next; picked = null;
       if (typeof data?.team === "string") { teamInput.value = data.team; store(TEAM_KEY, data.team); }
@@ -511,11 +512,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     doc.autoTable({
       startY: M + 36,
       margin: { left: M, right: M, top: M + 36 },
-      head: [["#", "Business problem", "Quadrant", "Trigger", "Action"]],
-      body: sorted().map((i, n) => [n + 1, i.text, ZONES[i.zone].name, i.trigger.trim() || "—", i.action.trim() || "—"]),
+      head: [["#", "Business problem", "Quadrant", "Trigger", "Action", "Why is it in this quadrant?"]],
+      body: sorted().map((i, n) => [n + 1, i.text, ZONES[i.zone].name, i.trigger.trim() || "—", i.action.trim() || "—", i.why.trim() || "—"]),
       styles: { font: "helvetica", fontSize: 9, cellPadding: 6, textColor: INK, lineColor: [211, 217, 227], lineWidth: 0.5, valign: "top" },
       headStyles: { fillColor: INK, textColor: [255, 255, 255], fontStyle: "bold" },
-      columnStyles: { 0: { cellWidth: 24 }, 1: { cellWidth: 150 }, 2: { cellWidth: 120 } },
+      columnStyles: { 0: { cellWidth: 24 }, 1: { cellWidth: 130 }, 2: { cellWidth: 100 } },
       didDrawPage: d => { if (d.pageNumber > 1) head("Step 2 · Trigger and action (continued)"); }
     });
 
