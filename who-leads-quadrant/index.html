@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Type business problems and drag each into the quadrant that says who should lead the work.">
+<title>Who Leads the Work?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one 16:9 slide — header, 2x2 grid with axis labels, then an input bar and a tray of unplaced problems */
+:root {
+  --bg: #eef1f5;
+  --slide: #ffffff;
+  --ink: #17233b;
+  --muted: #5b6780;
+  --line: #d3d9e3;
+  --accent: #b23a4f;
+  --person: #f8f1f8;      /* person-led quadrants */
+  --person-edge: #c9a6cf;
+  --person-ink: #4b2a5c;
+  --ai: #eff4f7;          /* AI-led quadrants */
+  --ai-edge: #a9bfcd;
+  --ai-ink: #1f3e52;
+  --chip: #ffffff;
+  --chip-edge: #9aa6ba;
+  --hover: #fff6d9;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1420; --slide: #161d2c; --ink: #e6eaf2; --muted: #9aa5bb; --line: #2c3548;
+    --accent: #e0707f; --person: #261d2e; --person-edge: #6f4f7a; --person-ink: #e2c8ea;
+    --ai: #18232d; --ai-edge: #3f5a6c; --ai-ink: #bcd7e8; --chip: #1f2738; --chip-edge: #4a556c;
+    --hover: #3a3420; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1420; --slide: #161d2c; --ink: #e6eaf2; --muted: #9aa5bb; --line: #2c3548;
+  --accent: #e0707f; --person: #261d2e; --person-edge: #6f4f7a; --person-ink: #e2c8ea;
+  --ai: #18232d; --ai-edge: #3f5a6c; --ai-ink: #bcd7e8; --chip: #1f2738; --chip-edge: #4a556c;
+  --hover: #3a3420; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; padding: 24px 16px; }
+.slide {
+  max-width: 1280px; margin: 0 auto; background: var(--slide); border: 1px solid var(--line);
+  border-radius: 10px; padding: 28px 32px; display: grid; gap: 18px; aspect-ratio: 16 / 9;
+  grid-template-rows: auto 1fr auto auto;
+}
+header { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.6vw, 34px); margin: 0; text-wrap: balance; line-height: 1.1; }
+.tally { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.matrix { display: grid; grid-template-columns: 130px 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 10px; min-height: 0; }
+.colhead, .rowhead { font-family: var(--font-display); font-weight: 500; font-size: 16px; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; }
+.colhead { padding-bottom: 2px; }
+.rowhead { padding-right: 6px; line-height: 1.25; }
+.zone {
+  border: 1.5px solid; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+  min-height: 130px; min-width: 0; overflow: auto; transition: background .15s, box-shadow .15s;
+}
+.zone.person { background: var(--person); border-color: var(--person-edge); color: var(--person-ink); }
+.zone.ai { background: var(--ai); border-color: var(--ai-edge); color: var(--ai-ink); }
+.zone h2 { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; display: flex; justify-content: space-between; gap: 8px; }
+.zone h2 .n { font-family: var(--font-mono); font-weight: 500; font-size: 12px; opacity: .7; }
+.zone .drop { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; flex: 1; }
+.zone.over { box-shadow: 0 0 0 3px var(--accent) inset; }
+.zone:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.zone.target { cursor: pointer; box-shadow: 0 0 0 2px var(--accent) inset; }
+
+.adder { display: flex; gap: 8px; flex-wrap: wrap; }
+.adder input {
+  flex: 1 1 280px; min-width: 0; font: inherit; color: var(--ink); background: var(--slide);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 12px;
+}
+.adder input:focus { outline: none; border-color: var(--accent); }
+button { font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px; padding: 8px 14px; border: 1.5px solid var(--line); background: var(--slide); color: var(--ink); }
+button.primary { background: var(--ink); color: var(--slide); border-color: var(--ink); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.trayrow { display: grid; gap: 6px; }
+.traylabel { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.tray { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 8px; border: 1.5px dashed var(--line); border-radius: 10px; }
+.tray.over { border-color: var(--accent); background: var(--hover); }
+.tray:empty::before { content: "All problems placed. Add another above, or drag one back here."; color: var(--muted); font-style: italic; align-self: center; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--chip); color: var(--ink);
+  border: 1.5px solid var(--chip-edge); border-radius: 6px; padding: 5px 6px 5px 10px; font-size: 14px; line-height: 1.25;
+  cursor: grab; touch-action: none; user-select: none; max-width: 100%;
+}
+.chip span { min-width: 0; overflow-wrap: anywhere; }
+.chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.chip.picked { border-color: var(--accent); background: var(--hover); }
+.chip.dragging { opacity: .35; }
+.chip .x { border: 0; background: none; padding: 0 4px; font-size: 16px; line-height: 1; color: var(--muted); border-radius: 4px; }
+.chip .x:hover { color: var(--accent); }
+.ghost { position: fixed; pointer-events: none; z-index: 10; cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,.18); transform: rotate(-2deg); }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+
+@media (max-width: 760px) {
+  .slide { aspect-ratio: auto; padding: 20px 16px; }
+  .matrix { grid-template-columns: 1fr 1fr; }
+  .rowhead, .corner { display: none; }
+  .colhead { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .zone { transition: none; } .ghost { transform: none; } }
+</style>
+</head>
+<body>
+
+<main class="slide">
+  <header>
+    <div>
+      <p class="eyebrow">Place a problem · your turn</p>
+      <h1>Where does each business problem sit, and who should lead it?</h1>
+    </div>
+    <div class="tally" id="tally"></div>
+  </header>
+
+  <section class="matrix" aria-label="Two by two placement grid">
+    <div class="corner"></div>
+    <div class="colhead">Work with a right answer</div>
+    <div class="colhead">Work with no single right answer</div>
+
+    <div class="rowhead">Work that people and AI must do together</div>
+    <div class="zone person" data-zone="q1" tabindex="0"><h2>A person leads, AI inside <span class="n"></span></h2><div class="drop"></div></div>
+    <div class="zone ai" data-zone="q2" tabindex="0"><h2>Agents run it, a person judges <span class="n"></span></h2><div class="drop"></div></div>
+
+    <div class="rowhead">Work that either of them can do alone</div>
+    <div class="zone ai" data-zone="q3" tabindex="0"><h2>AI alone, with checks <span class="n"></span></h2><div class="drop"></div></div>
+    <div class="zone person" data-zone="q4" tabindex="0"><h2>A person decides, AI alongside <span class="n"></span></h2><div class="drop"></div></div>
+  </section>
+
+  <form class="adder" id="adder" autocomplete="off">
+    <input id="problem" type="text" maxlength="90" placeholder="Type a business problem, e.g. Retailer · Forecast weekly demand" aria-label="New business problem">
+    <button class="primary" type="submit">Add problem</button>
+    <button type="button" id="unplace">Move all back</button>
+    <button type="button" id="clear">Clear all</button>
+  </form>
+
+  <div class="trayrow">
+    <div class="traylabel">Unplaced problems · drag onto a quadrant (or click a problem, then click a quadrant)</div>
+    <div class="tray" id="tray" data-zone="tray"></div>
+  </div>
+</main>
+
+<script>
+(() => {
+  const KEY = "who-leads-quadrant-v1";
+  const SAMPLE = [
+    "Bank · Check a loan file", "Government · Approve a benefit claim", "Marketing · Translate a product page",
+    "Payments · Match payments to invoices", "Consulting · Advise on a merger", "Insurer · Settle a disputed claim",
+    "Marketing · Test ad versions", "Asset manager · Write investor letter"
+  ];
+  let items = load() || SAMPLE.map((t, i) => ({ id: "s" + i, text: t, zone: "tray" }));
+  let picked = null;
+  const clearBtn = document.getElementById("clear");
+  let clearArmed = false;
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} }
+  const container = z => z === "tray" ? document.getElementById("tray") : document.querySelector(`[data-zone="${z}"] .drop`);
+
+  function render() {
+    document.querySelectorAll(".drop, #tray").forEach(el => el.replaceChildren());
+    for (const it of items) container(it.zone).append(chip(it));
+    document.querySelectorAll(".zone").forEach(z => {
+      z.querySelector(".n").textContent = items.filter(i => i.zone === z.dataset.zone).length || "";
+      z.classList.toggle("target", !!picked);
+    });
+    const placed = items.filter(i => i.zone !== "tray").length;
+    document.getElementById("tally").textContent = `${placed} of ${items.length} placed`;
+    save();
+  }
+
+  function chip(it) {
+    const el = document.createElement("div");
+    el.className = "chip" + (picked === it.id ? " picked" : "");
+    el.tabIndex = 0; el.dataset.id = it.id;
+    el.setAttribute("role", "button");
+    el.setAttribute("aria-label", `${it.text}. Press Enter to pick up, then choose a quadrant.`);
+    const s = document.createElement("span"); s.textContent = it.text;
+    const x = document.createElement("button"); x.type = "button"; x.className = "x"; x.textContent = "×";
+    x.setAttribute("aria-label", "Remove " + it.text);
+    x.addEventListener("pointerdown", e => e.stopPropagation());
+    x.addEventListener("click", e => { e.stopPropagation(); items = items.filter(i => i.id !== it.id); if (picked === it.id) picked = null; render(); });
+    el.append(s, x);
+    el.addEventListener("pointerdown", e => startDrag(e, it, el));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); togglePick(it.id); } });
+    return el;
+  }
+
+  function togglePick(id) { picked = picked === id ? null : id; render(); if (picked) document.querySelector(`[data-zone="q1"]`).focus(); }
+  function moveTo(id, zone) {
+    const i = items.findIndex(x => x.id === id); if (i < 0) return;
+    const [it] = items.splice(i, 1); it.zone = zone; items.push(it);
+    picked = null; render();
+  }
+
+  // Pointer-based drag: works with mouse, pen and touch.
+  function startDrag(e, it, el) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const sx = e.clientX, sy = e.clientY, rect = el.getBoundingClientRect();
+    let ghost = null, over = null;
+    const zoneAt = (x, y) => document.elementFromPoint(x, y)?.closest("[data-zone]");
+    const move = ev => {
+      if (!ghost) {
+        if (Math.hypot(ev.clientX - sx, ev.clientY - sy) < 5) return;
+        ghost = el.cloneNode(true); ghost.classList.add("ghost"); ghost.style.width = rect.width + "px";
+        document.body.append(ghost); el.classList.add("dragging");
+      }
+      ghost.style.left = ev.clientX - (sx - rect.left) + "px";
+      ghost.style.top = ev.clientY - (sy - rect.top) + "px";
+      const z = zoneAt(ev.clientX, ev.clientY);
+      if (z !== over) { over?.classList.remove("over"); over = z; over?.classList.add("over"); }
+    };
+    const up = ev => {
+      window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+      over?.classList.remove("over");
+      if (ghost) { ghost.remove(); el.classList.remove("dragging"); if (over && ev.type === "pointerup") moveTo(it.id, over.dataset.zone); }
+      else togglePick(it.id);
+    };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+  }
+
+  document.querySelectorAll(".zone, #tray").forEach(z => {
+    const go = () => { if (picked) moveTo(picked, z.dataset.zone); };
+    z.addEventListener("click", e => { if (!e.target.closest(".chip")) go(); });
+    z.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === z) { e.preventDefault(); go(); } });
+  });
+
+  document.getElementById("adder").addEventListener("submit", e => {
+    e.preventDefault();
+    const inp = document.getElementById("problem"), text = inp.value.trim();
+    if (!text) { inp.focus(); return; }
+    items.push({ id: "u" + Date.now(), text, zone: "tray" });
+    inp.value = ""; inp.focus(); render();
+  });
+  document.getElementById("unplace").addEventListener("click", () => { items.forEach(i => i.zone = "tray"); picked = null; render(); });
+  clearBtn.addEventListener("click", () => {
+    if (!clearArmed) { clearArmed = true; clearBtn.textContent = "Click again to clear"; setTimeout(() => { clearArmed = false; clearBtn.textContent = "Clear all"; }, 2500); return; }
+    clearArmed = false; clearBtn.textContent = "Clear all"; items = []; picked = null; render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
