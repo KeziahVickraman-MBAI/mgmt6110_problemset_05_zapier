@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/who-leads-quadrant/index.html" }
+  ]
+}
