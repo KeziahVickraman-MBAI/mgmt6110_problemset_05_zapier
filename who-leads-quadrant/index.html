@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Type business problems and drag each into the quadrant that says who should lead the work.">
+<meta name="description" content="Place business problems on a 2x2 of who should lead the work, write a trigger and action for each, and export a PDF for submission.">
 <title>Who Leads the Work?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
-/* Layout: one 16:9 slide — header, 2x2 grid with axis labels, then an input bar and a tray of unplaced problems */
+/* Layout: one 16:9 slide — header with tabs and export, then either the 2x2 placement grid or the trigger/action sheet */
 :root {
   --bg: #eef1f5;
   --slide: #ffffff;
@@ -44,24 +46,33 @@
   --hover: #3a3420; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; padding: 24px 16px; }
 .slide {
   max-width: 1280px; margin: 0 auto; background: var(--slide); border: 1px solid var(--line);
-  border-radius: 10px; padding: 28px 32px; display: grid; gap: 18px; aspect-ratio: 16 / 9;
-  grid-template-rows: auto 1fr auto auto;
+  border-radius: 10px; padding: 24px 32px 28px; display: flex; flex-direction: column; gap: 16px; aspect-ratio: 16 / 9;
 }
 header { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.6vw, 34px); margin: 0; text-wrap: balance; line-height: 1.1; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.6vw, 32px); margin: 0; text-wrap: balance; line-height: 1.1; }
+.submit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.submit input { width: 190px; }
 .tally { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.msg { font-size: 13px; color: var(--accent); min-height: 1em; margin: 0; width: 100%; text-align: right; }
 
-.matrix { display: grid; grid-template-columns: 130px 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 10px; min-height: 0; }
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--line); flex-wrap: wrap; }
+.tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 8px 14px; color: var(--muted); margin-bottom: -1.5px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .step { font-family: var(--font-mono); font-size: 12px; margin-right: 6px; }
+
+.panel { display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0; }
+
+.matrix { display: grid; grid-template-columns: 130px 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 10px; flex: 1; min-height: 0; }
 .colhead, .rowhead { font-family: var(--font-display); font-weight: 500; font-size: 16px; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; }
-.colhead { padding-bottom: 2px; }
 .rowhead { padding-right: 6px; line-height: 1.25; }
 .zone {
   border: 1.5px solid; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
-  min-height: 130px; min-width: 0; overflow: auto; transition: background .15s, box-shadow .15s;
+  min-height: 120px; min-width: 0; overflow: auto; transition: background .15s, box-shadow .15s;
 }
 .zone.person { background: var(--person); border-color: var(--person-edge); color: var(--person-ink); }
 .zone.ai { background: var(--ai); border-color: var(--ai-edge); color: var(--ai-ink); }
@@ -72,14 +83,16 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 
 .zone:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .zone.target { cursor: pointer; box-shadow: 0 0 0 2px var(--accent) inset; }
 
-.adder { display: flex; gap: 8px; flex-wrap: wrap; }
-.adder input {
-  flex: 1 1 280px; min-width: 0; font: inherit; color: var(--ink); background: var(--slide);
-  border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 12px;
+input[type="text"], textarea {
+  font: inherit; color: var(--ink); background: var(--slide);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 0;
 }
-.adder input:focus { outline: none; border-color: var(--accent); }
+input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent); }
+.adder { display: flex; gap: 8px; flex-wrap: wrap; }
+.adder input { flex: 1 1 280px; }
 button { font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px; padding: 8px 14px; border: 1.5px solid var(--line); background: var(--slide); color: var(--ink); }
 button.primary { background: var(--ink); color: var(--slide); border-color: var(--ink); }
+button.export { background: var(--accent); color: #fff; border-color: var(--accent); }
 button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 .trayrow { display: grid; gap: 6px; }
@@ -100,72 +113,138 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .chip .x { border: 0; background: none; padding: 0 4px; font-size: 16px; line-height: 1; color: var(--muted); border-radius: 4px; }
 .chip .x:hover { color: var(--accent); }
 .ghost { position: fixed; pointer-events: none; z-index: 10; cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,.18); transform: rotate(-2deg); }
-.hint { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* Tab 2: trigger / action sheet */
+.sheet-intro { margin: 0; color: var(--muted); max-width: 75ch; }
+.sheet { display: grid; gap: 10px; overflow: auto; flex: 1; min-height: 0; padding-right: 4px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; }
+.row.person { border-left: 5px solid var(--person-edge); }
+.row.ai { border-left: 5px solid var(--ai-edge); }
+.row.none { border-left: 5px dashed var(--line); }
+.problem { display: grid; gap: 4px; min-width: 0; }
+.problem strong { font-weight: 600; overflow-wrap: anywhere; }
+.badge { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.field textarea { resize: vertical; min-height: 58px; line-height: 1.35; }
+.empty { color: var(--muted); font-style: italic; padding: 20px; border: 1.5px dashed var(--line); border-radius: 10px; }
 
 @media (max-width: 760px) {
   .slide { aspect-ratio: auto; padding: 20px 16px; }
   .matrix { grid-template-columns: 1fr 1fr; }
   .rowhead, .corner { display: none; }
   .colhead { font-size: 14px; }
+  .row { grid-template-columns: 1fr; }
+  .submit input { width: 100%; }
+  .msg { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { .zone { transition: none; } .ghost { transform: none; } }
 </style>
 </head>
 <body>
-
 <main class="slide">
   <header>
     <div>
       <p class="eyebrow">Place a problem · your turn</p>
       <h1>Where does each business problem sit, and who should lead it?</h1>
     </div>
-    <div class="tally" id="tally"></div>
+    <div class="submit">
+      <span class="tally" id="tally"></span>
+      <input id="team" type="text" maxlength="60" placeholder="Team name" aria-label="Team name">
+      <button type="button" class="export" id="export">Export PDF</button>
+      <p class="msg" id="msg" role="status"></p>
+    </div>
   </header>
 
-  <section class="matrix" aria-label="Two by two placement grid">
-    <div class="corner"></div>
-    <div class="colhead">Work with a right answer</div>
-    <div class="colhead">Work with no single right answer</div>
+  <nav class="tabs" role="tablist" aria-label="Steps">
+    <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true"><span class="step">1</span>Place problems</button>
+    <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false"><span class="step">2</span>Trigger and action</button>
+  </nav>
 
-    <div class="rowhead">Work that people and AI must do together</div>
-    <div class="zone person" data-zone="q1" tabindex="0"><h2>A person leads, AI inside <span class="n"></span></h2><div class="drop"></div></div>
-    <div class="zone ai" data-zone="q2" tabindex="0"><h2>Agents run it, a person judges <span class="n"></span></h2><div class="drop"></div></div>
+  <section class="panel" id="panel-place" role="tabpanel" aria-labelledby="tab-place">
+    <div class="matrix" aria-label="Two by two placement grid">
+      <div class="corner"></div>
+      <div class="colhead">Work with a right answer</div>
+      <div class="colhead">Work with no single right answer</div>
 
-    <div class="rowhead">Work that either of them can do alone</div>
-    <div class="zone ai" data-zone="q3" tabindex="0"><h2>AI alone, with checks <span class="n"></span></h2><div class="drop"></div></div>
-    <div class="zone person" data-zone="q4" tabindex="0"><h2>A person decides, AI alongside <span class="n"></span></h2><div class="drop"></div></div>
+      <div class="rowhead">Work that people and AI must do together</div>
+      <div class="zone person" data-zone="q1" tabindex="0"><h2>A person leads, AI inside <span class="n"></span></h2><div class="drop"></div></div>
+      <div class="zone ai" data-zone="q2" tabindex="0"><h2>Agents run it, a person judges <span class="n"></span></h2><div class="drop"></div></div>
+
+      <div class="rowhead">Work that either of them can do alone</div>
+      <div class="zone ai" data-zone="q3" tabindex="0"><h2>AI alone, with checks <span class="n"></span></h2><div class="drop"></div></div>
+      <div class="zone person" data-zone="q4" tabindex="0"><h2>A person decides, AI alongside <span class="n"></span></h2><div class="drop"></div></div>
+    </div>
+
+    <form class="adder" id="adder" autocomplete="off">
+      <input id="problem" type="text" maxlength="90" placeholder="Type a business problem, e.g. Retailer · Forecast weekly demand" aria-label="New business problem">
+      <button class="primary" type="submit">Add problem</button>
+      <button type="button" id="unplace">Move all back</button>
+      <button type="button" id="clear">Clear all</button>
+    </form>
+
+    <div class="trayrow">
+      <div class="traylabel">Unplaced problems · drag onto a quadrant (or click a problem, then click a quadrant)</div>
+      <div class="tray" id="tray" data-zone="tray"></div>
+    </div>
   </section>
 
-  <form class="adder" id="adder" autocomplete="off">
-    <input id="problem" type="text" maxlength="90" placeholder="Type a business problem, e.g. Retailer · Forecast weekly demand" aria-label="New business problem">
-    <button class="primary" type="submit">Add problem</button>
-    <button type="button" id="unplace">Move all back</button>
-    <button type="button" id="clear">Clear all</button>
-  </form>
-
-  <div class="trayrow">
-    <div class="traylabel">Unplaced problems · drag onto a quadrant (or click a problem, then click a quadrant)</div>
-    <div class="tray" id="tray" data-zone="tray"></div>
-  </div>
+  <section class="panel" id="panel-trigger" role="tabpanel" aria-labelledby="tab-trigger" hidden>
+    <p class="sheet-intro">For each problem, write the event that starts the work and what happens next. Problems are listed in quadrant order.</p>
+    <div class="sheet" id="sheet"></div>
+  </section>
 </main>
 
 <script>
 (() => {
   const KEY = "who-leads-quadrant-v1";
+  const TEAM_KEY = "who-leads-team-v1";
+  const ZONES = {
+    q1: { name: "A person leads, AI inside", kind: "person" },
+    q2: { name: "Agents run it, a person judges", kind: "ai" },
+    q3: { name: "AI alone, with checks", kind: "ai" },
+    q4: { name: "A person decides, AI alongside", kind: "person" },
+    tray: { name: "Not placed yet", kind: "none" }
+  };
+  const ORDER = ["q1", "q2", "q3", "q4", "tray"];
   const SAMPLE = [
     "Bank · Check a loan file", "Government · Approve a benefit claim", "Marketing · Translate a product page",
     "Payments · Match payments to invoices", "Consulting · Advise on a merger", "Insurer · Settle a disputed claim",
     "Marketing · Test ad versions", "Asset manager · Write investor letter"
   ];
-  let items = load() || SAMPLE.map((t, i) => ({ id: "s" + i, text: t, zone: "tray" }));
+  let items = load(KEY) || SAMPLE.map((t, i) => ({ id: "s" + i, text: t, zone: "tray" }));
+  items.forEach(i => { i.trigger ??= ""; i.action ??= ""; });
   let picked = null;
-  const clearBtn = document.getElementById("clear");
-  let clearArmed = false;
+  const $ = id => document.getElementById(id);
+  const teamInput = $("team");
+  teamInput.value = load(TEAM_KEY) || "";
+  teamInput.addEventListener("input", () => { store(TEAM_KEY, teamInput.value); $("msg").textContent = ""; });
 
-  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} }
-  const container = z => z === "tray" ? document.getElementById("tray") : document.querySelector(`[data-zone="${z}"] .drop`);
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  const save = () => store(KEY, items);
+  const container = z => z === "tray" ? $("tray") : document.querySelector(`[data-zone="${z}"] .drop`);
+  const sorted = () => ORDER.flatMap(z => items.filter(i => i.zone === z));
 
+  /* ---------- Tabs ---------- */
+  const tabs = [$("tab-place"), $("tab-trigger")];
+  function showTab(tab) {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute("aria-selected", on);
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    if (tab.id === "tab-trigger") renderSheet();
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => showTab(t));
+    t.addEventListener("keydown", e => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + 1) % 2]; showTab(n); n.focus(); }
+    });
+  });
+
+  /* ---------- Tab 1: placement ---------- */
   function render() {
     document.querySelectorAll(".drop, #tray").forEach(el => el.replaceChildren());
     for (const it of items) container(it.zone).append(chip(it));
@@ -174,7 +253,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       z.classList.toggle("target", !!picked);
     });
     const placed = items.filter(i => i.zone !== "tray").length;
-    document.getElementById("tally").textContent = `${placed} of ${items.length} placed`;
+    $("tally").textContent = `${placed} of ${items.length} placed`;
     save();
   }
 
@@ -234,18 +313,138 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     z.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === z) { e.preventDefault(); go(); } });
   });
 
-  document.getElementById("adder").addEventListener("submit", e => {
+  $("adder").addEventListener("submit", e => {
     e.preventDefault();
-    const inp = document.getElementById("problem"), text = inp.value.trim();
+    const inp = $("problem"), text = inp.value.trim();
     if (!text) { inp.focus(); return; }
-    items.push({ id: "u" + Date.now(), text, zone: "tray" });
+    items.push({ id: "u" + Date.now(), text, zone: "tray", trigger: "", action: "" });
     inp.value = ""; inp.focus(); render();
   });
-  document.getElementById("unplace").addEventListener("click", () => { items.forEach(i => i.zone = "tray"); picked = null; render(); });
+  $("unplace").addEventListener("click", () => { items.forEach(i => i.zone = "tray"); picked = null; render(); });
+  const clearBtn = $("clear");
+  let clearArmed = false;
   clearBtn.addEventListener("click", () => {
     if (!clearArmed) { clearArmed = true; clearBtn.textContent = "Click again to clear"; setTimeout(() => { clearArmed = false; clearBtn.textContent = "Clear all"; }, 2500); return; }
     clearArmed = false; clearBtn.textContent = "Clear all"; items = []; picked = null; render();
   });
+
+  /* ---------- Tab 2: trigger and action ---------- */
+  function field(it, key, label, placeholder) {
+    const wrap = document.createElement("div"); wrap.className = "field";
+    const id = `${key}-${it.id}`;
+    const l = document.createElement("label"); l.htmlFor = id; l.textContent = label;
+    const t = document.createElement("textarea"); t.id = id; t.rows = 2; t.placeholder = placeholder; t.value = it[key];
+    t.addEventListener("input", () => { it[key] = t.value; save(); });
+    wrap.append(l, t);
+    return wrap;
+  }
+  function renderSheet() {
+    const sheet = $("sheet"); sheet.replaceChildren();
+    if (!items.length) {
+      const p = document.createElement("p"); p.className = "empty";
+      p.textContent = "No problems yet. Add them in step 1, then come back to write a trigger and action for each.";
+      sheet.append(p); return;
+    }
+    for (const it of sorted()) {
+      const z = ZONES[it.zone];
+      const row = document.createElement("div"); row.className = "row " + z.kind;
+      const p = document.createElement("div"); p.className = "problem";
+      const s = document.createElement("strong"); s.textContent = it.text;
+      const b = document.createElement("span"); b.className = "badge"; b.textContent = z.name;
+      p.append(s, b);
+      row.append(p,
+        field(it, "trigger", "Trigger", "When… e.g. a new loan file is uploaded"),
+        field(it, "action", "Action", "Then… e.g. AI checks documents, an officer signs off"));
+      sheet.append(row);
+    }
+  }
+
+  /* ---------- Export PDF ---------- */
+  $("export").addEventListener("click", () => {
+    const msg = $("msg");
+    const team = teamInput.value.trim();
+    if (!team) { msg.textContent = "Add your team name before exporting."; teamInput.focus(); return; }
+    if (!items.length) { msg.textContent = "Add at least one problem before exporting."; return; }
+    if (!window.jspdf) { msg.textContent = "The PDF tool did not load. Check your connection and reload the page."; return; }
+    msg.textContent = "";
+    exportPdf(team);
+  });
+
+  function exportPdf(team) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 36;
+    const date = new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    const INK = [23, 35, 59], MUTED = [91, 103, 128], ACCENT = [178, 58, 79];
+    const FILL = { person: [248, 241, 248], ai: [239, 244, 247] }, EDGE = { person: [201, 166, 207], ai: [169, 191, 205] };
+
+    const head = sub => {
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...ACCENT);
+      doc.text(sub.toUpperCase(), M, M);
+      doc.setFontSize(16); doc.setTextColor(...INK);
+      doc.text("Where does each business problem sit, and who should lead it?", M, M + 20);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(...MUTED);
+      doc.text(`Team: ${team}   ·   ${date}`, W - M, M, { align: "right" });
+    };
+
+    // Page 1: the 2x2
+    head("Step 1 · Placement");
+    const rowW = 92, colH = 18, top = M + 40;
+    const unplaced = items.filter(i => i.zone === "tray");
+    const bottom = H - M - (unplaced.length ? 34 : 0);
+    const gx = M + rowW, gw = (W - M - gx - 8) / 2, gh = (bottom - top - colH - 8) / 2;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(...INK);
+    doc.text("Work with a right answer", gx + gw / 2, top + 11, { align: "center" });
+    doc.text("Work with no single right answer", gx + gw + 8 + gw / 2, top + 11, { align: "center" });
+    const rowLabels = ["Work that people and AI must do together", "Work that either of them can do alone"];
+    rowLabels.forEach((t, r) => {
+      const lines = doc.splitTextToSize(t, rowW - 12);
+      doc.text(lines, M + (rowW - 8) / 2, top + colH + r * (gh + 8) + gh / 2 - (lines.length - 1) * 6, { align: "center" });
+    });
+    [["q1", 0, 0], ["q2", 1, 0], ["q3", 0, 1], ["q4", 1, 1]].forEach(([z, c, r]) => {
+      const x = gx + c * (gw + 8), y = top + colH + r * (gh + 8), kind = ZONES[z].kind;
+      doc.setFillColor(...FILL[kind]); doc.setDrawColor(...EDGE[kind]); doc.setLineWidth(1);
+      doc.roundedRect(x, y, gw, gh, 6, 6, "FD");
+      doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(...INK);
+      doc.text(ZONES[z].name, x + 10, y + 18);
+      const list = items.filter(i => i.zone === z);
+      // Shrink the font until the list fits the box.
+      let size = 10, lines;
+      for (; size >= 6; size--) {
+        doc.setFontSize(size);
+        lines = list.flatMap(i => doc.splitTextToSize("• " + i.text, gw - 20));
+        if (lines.length * size * 1.25 <= gh - 34) break;
+      }
+      doc.setFont("helvetica", "normal"); doc.setTextColor(...INK);
+      doc.text(lines.length ? lines : ["(none)"], x + 10, y + 34, { lineHeightFactor: 1.25 });
+    });
+    if (unplaced.length) {
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(...MUTED);
+      doc.text(doc.splitTextToSize("Not placed yet: " + unplaced.map(i => i.text).join("; "), W - 2 * M), M, H - M - 18);
+    }
+
+    // Page 2: trigger and action table
+    doc.addPage();
+    head("Step 2 · Trigger and action");
+    doc.autoTable({
+      startY: M + 36,
+      margin: { left: M, right: M, top: M + 36 },
+      head: [["#", "Business problem", "Quadrant", "Trigger", "Action"]],
+      body: sorted().map((i, n) => [n + 1, i.text, ZONES[i.zone].name, i.trigger.trim() || "—", i.action.trim() || "—"]),
+      styles: { font: "helvetica", fontSize: 9, cellPadding: 6, textColor: INK, lineColor: [211, 217, 227], lineWidth: 0.5, valign: "top" },
+      headStyles: { fillColor: INK, textColor: [255, 255, 255], fontStyle: "bold" },
+      columnStyles: { 0: { cellWidth: 24 }, 1: { cellWidth: 150 }, 2: { cellWidth: 120 } },
+      didDrawPage: d => { if (d.pageNumber > 1) head("Step 2 · Trigger and action (continued)"); }
+    });
+
+    const pages = doc.getNumberOfPages();
+    for (let p = 1; p <= pages; p++) {
+      doc.setPage(p); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(...MUTED);
+      doc.text(`Page ${p} of ${pages}`, W - M, H - 16, { align: "right" });
+    }
+    const safe = team.replace(/[^\w-]+/g, "_").replace(/^_+|_+$/g, "") || "team";
+    doc.save(`who-leads-the-work_${safe}.pdf`);
+  }
 
   render();
 })();
