@@ -100,6 +100,9 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .tray { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 8px; border: 1.5px dashed var(--line); border-radius: 10px; }
 .tray.over { border-color: var(--accent); background: var(--hover); }
 .tray:empty::before { content: "All problems placed. Add another above, or drag one back here."; color: var(--muted); font-style: italic; align-self: center; }
+.starter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; width: 100%; padding: 4px; }
+.starter p { margin: 0; color: var(--muted); flex: 1 1 260px; }
+.starter strong { color: var(--ink); }
 
 .chip {
   display: inline-flex; align-items: center; gap: 6px; background: var(--chip); color: var(--ink);
@@ -182,6 +185,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <form class="adder" id="adder" autocomplete="off">
       <input id="problem" type="text" maxlength="90" placeholder="Type a business problem, e.g. Retailer · Forecast weekly demand" aria-label="New business problem">
       <button class="primary" type="submit">Add problem</button>
+      <button type="button" id="examples">Load simulated examples</button>
       <button type="button" id="unplace">Move all back</button>
       <button type="button" id="clear">Clear all</button>
     </form>
@@ -210,12 +214,16 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     tray: { name: "Not placed yet", kind: "none" }
   };
   const ORDER = ["q1", "q2", "q3", "q4", "tray"];
+  // Simulated business problems, loaded unplaced so the team still decides where each goes.
   const SAMPLE = [
     "Bank · Check a loan file", "Government · Approve a benefit claim", "Marketing · Translate a product page",
-    "Payments · Match payments to invoices", "Consulting · Advise on a merger", "Insurer · Settle a disputed claim",
-    "Marketing · Test ad versions", "Asset manager · Write investor letter"
+    "Payments · Match payments to invoices", "Insurer · Check a claim form", "Tech · Reset a password by policy",
+    "Retailer · Forecast weekly demand", "Marketing · Test ad versions", "Consulting · Size a market",
+    "Product · Sort user comments", "Insurer · Settle a disputed claim", "Consulting · Advise on a merger",
+    "HR · Screen job applications", "Bank · Plan a negotiation", "Asset manager · Write investor letter",
+    "Government · Draft a policy"
   ];
-  let items = load(KEY) || SAMPLE.map((t, i) => ({ id: "s" + i, text: t, zone: "tray" }));
+  let items = load(KEY) || [];
   items.forEach(i => { i.trigger ??= ""; i.action ??= ""; });
   let picked = null;
   const $ = id => document.getElementById(id);
@@ -251,6 +259,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   function render() {
     document.querySelectorAll(".drop, #tray").forEach(el => el.replaceChildren());
     for (const it of items) container(it.zone).append(chip(it));
+    if (!items.length) $("tray").append(starter());
     document.querySelectorAll(".zone").forEach(z => {
       z.querySelector(".n").textContent = items.filter(i => i.zone === z.dataset.zone).length || "";
       z.classList.toggle("target", !!picked);
@@ -275,6 +284,30 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     el.addEventListener("pointerdown", e => startDrag(e, it, el));
     el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); togglePick(it.id); } });
     return el;
+  }
+
+  function starter() {
+    const box = document.createElement("div"); box.className = "starter";
+    const p = document.createElement("p");
+    p.innerHTML = "<strong>Start here.</strong> Load a set of simulated business problems, or type your own in the box above.";
+    const ex = document.createElement("button"); ex.type = "button"; ex.className = "primary"; ex.textContent = "Load simulated examples";
+    ex.addEventListener("click", loadExamples);
+    const own = document.createElement("button"); own.type = "button"; own.textContent = "Input my own";
+    own.addEventListener("click", () => $("problem").focus());
+    box.append(p, ex, own);
+    return box;
+  }
+
+  // Adds the simulated problems to the tray, skipping any already on the board.
+  function loadExamples() {
+    const have = new Set(items.map(i => i.text.toLowerCase()));
+    const fresh = SAMPLE.filter(t => !have.has(t.toLowerCase()));
+    fresh.forEach((text, n) => items.push({ id: "s" + Date.now() + "_" + n, text, zone: "tray", trigger: "", action: "" }));
+    render();
+    if (!$("panel-trigger").hidden) renderSheet();
+    $("msg").textContent = fresh.length
+      ? `Added ${fresh.length} simulated problem${fresh.length === 1 ? "" : "s"} to the tray.`
+      : "All simulated problems are already on the board.";
   }
 
   function togglePick(id) { picked = picked === id ? null : id; render(); if (picked) document.querySelector(`[data-zone="q1"]`).focus(); }
@@ -323,6 +356,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     items.push({ id: "u" + Date.now(), text, zone: "tray", trigger: "", action: "" });
     inp.value = ""; inp.focus(); render();
   });
+  $("examples").addEventListener("click", loadExamples);
   $("unplace").addEventListener("click", () => { items.forEach(i => i.zone = "tray"); picked = null; render(); });
   const clearBtn = $("clear");
   let clearArmed = false;
