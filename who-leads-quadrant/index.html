@@ -151,6 +151,9 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <div class="submit">
       <span class="tally" id="tally"></span>
       <input id="team" type="text" maxlength="60" placeholder="Team name" aria-label="Team name">
+      <button type="button" id="save-json" title="Download everything as a .json file you can import later">Export JSON</button>
+      <button type="button" id="open-json" title="Load a .json file saved from this page">Import JSON</button>
+      <input type="file" id="json-file" accept=".json,application/json" hidden>
       <button type="button" class="export" id="export">Export PDF</button>
       <p class="msg" id="msg" role="status"></p>
     </div>
@@ -359,6 +362,51 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     }
   }
 
+  /* ---------- Export / import JSON session ---------- */
+  const safeName = t => t.replace(/[^\w-]+/g, "_").replace(/^_+|_+$/g, "") || "team";
+
+  $("save-json").addEventListener("click", () => {
+    const team = teamInput.value.trim();
+    const data = {
+      app: "who-leads-the-work", version: 1, exportedAt: new Date().toISOString(), team,
+      items: items.map(({ text, zone, trigger, action }) => ({ text, zone, trigger, action }))
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = `who-leads-the-work_${safeName(team)}.json`;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    $("msg").textContent = `Exported ${items.length} problem${items.length === 1 ? "" : "s"} to JSON.`;
+  });
+
+  $("open-json").addEventListener("click", () => $("json-file").click());
+  $("json-file").addEventListener("change", async e => {
+    const file = e.target.files[0]; e.target.value = "";
+    if (!file) return;
+    const msg = $("msg");
+    try {
+      const data = JSON.parse(await file.text());
+      const list = Array.isArray(data) ? data : data?.items;
+      if (!Array.isArray(list)) throw new Error("no items");
+      const str = v => typeof v === "string" ? v : "";
+      const next = list
+        .filter(i => i && str(i.text).trim())
+        .map((i, n) => ({
+          id: "i" + Date.now() + "_" + n,
+          text: str(i.text).trim().slice(0, 90),
+          zone: i.zone in ZONES ? i.zone : "tray",
+          trigger: str(i.trigger), action: str(i.action)
+        }));
+      items = next; picked = null;
+      if (typeof data?.team === "string") { teamInput.value = data.team; store(TEAM_KEY, data.team); }
+      render();
+      if (!$("panel-trigger").hidden) renderSheet();
+      msg.textContent = `Imported ${next.length} problem${next.length === 1 ? "" : "s"} from ${file.name}.`;
+    } catch {
+      msg.textContent = `Could not import ${file.name}. Choose a .json file exported from this page.`;
+    }
+  });
+
   /* ---------- Export PDF ---------- */
   $("export").addEventListener("click", () => {
     const msg = $("msg");
@@ -442,8 +490,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       doc.setPage(p); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(...MUTED);
       doc.text(`Page ${p} of ${pages}`, W - M, H - 16, { align: "right" });
     }
-    const safe = team.replace(/[^\w-]+/g, "_").replace(/^_+|_+$/g, "") || "team";
-    doc.save(`who-leads-the-work_${safe}.pdf`);
+    doc.save(`who-leads-the-work_${safeName(team)}.pdf`);
   }
 
   render();
