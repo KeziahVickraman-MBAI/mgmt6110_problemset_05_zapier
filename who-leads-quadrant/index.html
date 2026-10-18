@@ -132,8 +132,39 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .field textarea { resize: vertical; min-height: 58px; line-height: 1.35; }
 .empty { color: var(--muted); font-style: italic; padding: 20px; border: 1.5px dashed var(--line); border-radius: 10px; }
 
+/* Tab 3: where my group and I disagree */
+.disagree { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; flex: 1; min-height: 0; }
+.dleft { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.dz { border: 1.5px solid; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 110px; min-width: 0; transition: box-shadow .15s, opacity .15s; }
+.dz.person { background: var(--person); border-color: var(--person-edge); color: var(--person-ink); }
+.dz.ai { background: var(--ai); border-color: var(--ai-edge); color: var(--ai-ink); }
+.dz h2 { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; }
+.dz .slot { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.dz.lit { box-shadow: 0 0 0 3px var(--accent) inset; }
+.dz.dim { opacity: .55; }
+.pin { display: inline-flex; flex-direction: column; gap: 2px; background: var(--chip); color: var(--ink); border: 1.5px solid var(--chip-edge); border-radius: 6px; padding: 6px 10px; font-size: 14px; line-height: 1.25; max-width: 100%; }
+.pin.ghosted { border-style: dashed; background: none; color: var(--muted); }
+.pin .who { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.pin.ghosted .who { color: var(--muted); }
+.toggle { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toggle button[aria-pressed="true"] { background: var(--ink); color: var(--slide); border-color: var(--ink); }
+.toggle .caption { font-size: 13px; color: var(--muted); flex: 1 1 220px; }
+.note { border: 1.5px solid var(--line); border-left: 5px solid var(--accent); border-radius: 10px; padding: 14px 18px; overflow: auto; min-height: 0; display: grid; gap: 12px; align-content: start; line-height: 1.45; }
+.note h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 0; }
+.note h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.note p, .note ul { margin: 0; }
+.note ul { padding-left: 18px; display: grid; gap: 3px; }
+.note .same { color: var(--muted); }
+.note .tag { font-family: var(--font-mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); margin-left: 6px; vertical-align: 1px; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.compare > div { border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+.compare strong { display: block; font-size: 12px; font-family: var(--font-mono); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+.note mark { background: var(--hover); color: inherit; padding: 0 2px; border-radius: 2px; }
+.bottomline { font-weight: 600; }
+
 @media (max-width: 760px) {
   .slide { aspect-ratio: auto; padding: 20px 16px; }
+  .disagree, .compare { grid-template-columns: 1fr; }
   .matrix { grid-template-columns: 1fr 1fr; }
   .rowhead, .corner { display: none; }
   .colhead { font-size: 14px; }
@@ -141,7 +172,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .submit input { width: 100%; }
   .msg { text-align: left; }
 }
-@media (prefers-reduced-motion: reduce) { .zone { transition: none; } .ghost { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .zone, .dz { transition: none; } .ghost { transform: none; } }
 </style>
 </head>
 <body>
@@ -165,6 +196,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   <nav class="tabs" role="tablist" aria-label="Steps">
     <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true"><span class="step">1</span>Place problems</button>
     <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false"><span class="step">2</span>Trigger and action</button>
+    <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1"><span class="step">3</span>Q1d) Where we disagree</button>
   </nav>
 
   <section class="panel" id="panel-place" role="tabpanel" aria-labelledby="tab-place">
@@ -200,6 +232,71 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   <section class="panel" id="panel-trigger" role="tabpanel" aria-labelledby="tab-trigger" hidden>
     <p class="sheet-intro">For each problem, write the event that starts the work and what happens next. Problems are listed in quadrant order.</p>
     <div class="sheet" id="sheet"></div>
+  </section>
+
+  <section class="panel" id="panel-disagree" role="tabpanel" aria-labelledby="tab-disagree" hidden>
+    <div class="disagree">
+      <div class="dleft">
+        <div class="matrix" aria-label="Where Operations: Escalations of Disputes sits">
+          <div class="corner"></div>
+          <div class="colhead">Work with a right answer</div>
+          <div class="colhead">Work with no single right answer</div>
+
+          <div class="rowhead">Work that people and AI must do together</div>
+          <div class="dz person" data-d="q1"><h2>A person leads, AI inside</h2><div class="slot"></div></div>
+          <div class="dz ai" data-d="q2"><h2>Agents run it, a person judges</h2><div class="slot"></div></div>
+
+          <div class="rowhead">Work that either of them can do alone</div>
+          <div class="dz ai" data-d="q3"><h2>AI alone, with checks</h2><div class="slot"></div></div>
+          <div class="dz person" data-d="q4"><h2>A person decides, AI alongside</h2><div class="slot"></div></div>
+        </div>
+        <div class="toggle" role="group" aria-label="Show placement">
+          <button type="button" id="show-group" aria-pressed="true">Original (my group)</button>
+          <button type="button" id="show-mine" aria-pressed="false">Where I would place it</button>
+          <span class="caption" id="d-caption" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <aside class="note" aria-label="Side note: why I disagree">
+        <h3>Side note · Operations: Escalations of Disputes</h3>
+
+        <div>
+          <h4>Where I agree</h4>
+          <p>Most of my group's placements. For example, <strong>Insurance: Check completeness of claims document</strong> belongs in <em>AI alone, with checks</em>. Like my Full-Court Press agent, it has a right answer: a document is either complete or it isn't, so a person only needs to spot-check the result.</p>
+        </div>
+
+        <div>
+          <h4>Question 1 · Is there a right answer? <span class="tag">Same answer</span></h4>
+          <p class="same">No single right answer. The outcome depends on fairness, the relationship with the customer or supplier, and how much the company is willing to concede. None of that is a fact AI can verify.</p>
+        </div>
+
+        <div>
+          <h4>Question 2 · Together, or can either do it alone? <span class="tag">Different answer</span></h4>
+          <div class="compare">
+            <div><strong>My group</strong>Work people and AI must do together: agents run the process, and a person judges at set points inside it.</div>
+            <div><strong>Me</strong>Work either can do alone. In practice, a manager handles it alone.</div>
+          </div>
+        </div>
+
+        <div>
+          <h4>Why I would move it</h4>
+          <ul>
+            <li>An escalated dispute is usually a <mark>single, high-stakes case rather than a high-volume process</mark>.</li>
+            <li>A manager can resolve it without AI.</li>
+            <li>AI prepares the case: it summarizes the history, finds similar past cases and the relevant policy, and drafts two or three settlement options.</li>
+            <li>The person makes the decision and is accountable for it.</li>
+            <li>This matches the bottom-right example in the Week 7 deck: a banker plans a hard negotiation while AI drafts the options.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>When my group would be right</h4>
+          <p>If disputes arrived in large numbers, agents could triage them, gather evidence and propose resolutions, and a person would judge only the contested ones. The work would then be a process people and AI run together, and <em>Agents run it, a person judges</em> would fit.</p>
+        </div>
+
+        <p class="bottomline">So our disagreement is really about volume and design. For a single escalated case, a person decides, with AI alongside.</p>
+      </aside>
+    </div>
   </section>
 </main>
 
@@ -257,7 +354,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   const sorted = () => ORDER.flatMap(z => items.filter(i => i.zone === z));
 
   /* ---------- Tabs ---------- */
-  const tabs = [$("tab-place"), $("tab-trigger")];
+  const tabs = [$("tab-place"), $("tab-trigger"), $("tab-disagree")];
   function showTab(tab) {
     tabs.forEach(t => {
       const on = t === tab;
@@ -270,9 +367,40 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   tabs.forEach((t, i) => {
     t.addEventListener("click", () => showTab(t));
     t.addEventListener("keydown", e => {
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + 1) % 2]; showTab(n); n.focus(); }
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; showTab(n); n.focus();
+      }
     });
   });
+
+  /* ---------- Tab 3: where my group and I disagree ---------- */
+  const DISPUTE = "Operations: Escalations of Disputes";
+  const PLACES = {
+    group: { zone: "q2", who: "My group", caption: "Original: my group placed it in Agents run it, a person judges." },
+    mine: { zone: "q4", who: "Me", caption: "My view: a person decides, AI alongside, because an escalated dispute is a single, high-stakes case." }
+  };
+  function showPlacement(which) {
+    const other = which === "group" ? "mine" : "group";
+    document.querySelectorAll(".dz").forEach(z => {
+      const slot = z.querySelector(".slot"); slot.replaceChildren();
+      const isOn = z.dataset.d === PLACES[which].zone, isOther = z.dataset.d === PLACES[other].zone;
+      z.classList.toggle("lit", isOn);
+      z.classList.toggle("dim", !isOn && !isOther);
+      for (const [key, ghosted] of [[which, false], [other, true]]) {
+        if (z.dataset.d !== PLACES[key].zone) continue;
+        const pin = document.createElement("div"); pin.className = "pin" + (ghosted ? " ghosted" : "");
+        const w = document.createElement("span"); w.className = "who"; w.textContent = PLACES[key].who + (ghosted ? " (other view)" : "");
+        const t = document.createElement("span"); t.textContent = DISPUTE;
+        pin.append(w, t); slot.append(pin);
+      }
+    });
+    $("show-group").setAttribute("aria-pressed", which === "group");
+    $("show-mine").setAttribute("aria-pressed", which === "mine");
+    $("d-caption").textContent = PLACES[which].caption;
+  }
+  $("show-group").addEventListener("click", () => showPlacement("group"));
+  $("show-mine").addEventListener("click", () => showPlacement("mine"));
+  showPlacement("group");
 
   /* ---------- Tab 1: placement ---------- */
   function render() {
