@@ -219,6 +219,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <button class="primary" type="submit">Add problem</button>
       <button type="button" id="examples">Load simulated examples</button>
       <button type="button" id="group2">Load Group 2's examples</button>
+      <button type="button" id="ps5">Load Problem Set 05: WNBA Full Court Press</button>
       <button type="button" id="unplace">Move all back</button>
       <button type="button" id="clear">Clear all</button>
     </form>
@@ -339,6 +340,13 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       trigger: "Every day at 10am go through my SMU Elearn portal", action: "AI checks all documents and returns a csv file of my to do list in priority of deadlines",
       why: "Because there is a structured file format that needs repetitive scanning of. There is a standardized output" }
   ];
+  // My Problem Set 05 agent (see AGENT_CARD.md), loaded already placed with its trigger and action.
+  const WNBA = [
+    { text: "Problem Set 05: WNBA Full Court Press", zone: "q3",
+      trigger: "A new item in a WNBA RSS feed (RSS by Zapier: New Item in Feed)",
+      action: "Gmail (Send Email) emails the new WNBA news item to me. It must never email anyone but me: the To field is fixed to my own address. I read each email the same day and compare it to the source link.",
+      why: "It has a right answer: the email either matches the source item or it doesn't, so a person only needs to spot-check the result." }
+  ];
   let items = load(KEY) || [];
   items.forEach(i => { i.trigger ??= ""; i.action ??= ""; i.why ??= ""; });
   let picked = null;
@@ -441,9 +449,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     ex.addEventListener("click", loadExamples);
     const g2 = document.createElement("button"); g2.type = "button"; g2.textContent = "Load Group 2's examples";
     g2.addEventListener("click", loadGroup2);
+    const ps5 = document.createElement("button"); ps5.type = "button"; ps5.textContent = "Load Problem Set 05: WNBA Full Court Press";
+    ps5.addEventListener("click", loadWnba);
     const own = document.createElement("button"); own.type = "button"; own.textContent = "Input my own";
     own.addEventListener("click", () => $("problem").focus());
-    box.append(p, ex, g2, own);
+    box.append(p, ex, g2, ps5, own);
     return box;
   }
 
@@ -469,6 +479,18 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     $("msg").textContent = fresh.length
       ? `Added ${fresh.length} of Group 2's problem${fresh.length === 1 ? "" : "s"} to the board.`
       : "All of Group 2's problems are already on the board.";
+  }
+
+  // Adds my Problem Set 05 agent in its quadrant, unless it is already on the board.
+  function loadWnba() {
+    const have = new Set(items.map(i => i.text.toLowerCase()));
+    const fresh = WNBA.filter(g => !have.has(g.text.toLowerCase()));
+    fresh.forEach((g, n) => items.push({ id: "w" + Date.now() + "_" + n, ...g }));
+    render();
+    if (!$("panel-trigger").hidden) renderSheet();
+    $("msg").textContent = fresh.length
+      ? "Added Problem Set 05: WNBA Full Court Press to the board."
+      : "Problem Set 05: WNBA Full Court Press is already on the board.";
   }
 
   function togglePick(id) { picked = picked === id ? null : id; render(); if (picked) document.querySelector(`[data-zone="q1"]`).focus(); }
@@ -519,6 +541,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   });
   $("examples").addEventListener("click", loadExamples);
   $("group2").addEventListener("click", loadGroup2);
+  $("ps5").addEventListener("click", loadWnba);
   $("unplace").addEventListener("click", () => { items.forEach(i => i.zone = "tray"); picked = null; render(); });
   const clearBtn = $("clear");
   let clearArmed = false;
