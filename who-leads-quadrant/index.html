@@ -174,10 +174,31 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .shots img { object-fit: contain; background: var(--bg); }
 .shots .ph { border: 2px dashed var(--chip-edge); color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
 .shots figcaption { font-size: 14px; line-height: 1.4; }
+/* Zap history records rebuilt from the exported run data, in place of missing screenshots */
+.record { aspect-ratio: 16 / 10; border-radius: 6px; background: var(--bg); padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow: auto; font-size: 13px; line-height: 1.4; }
+.record .src { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.run { background: var(--slide); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
+.run .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.run .hl { font-weight: 600; overflow-wrap: anywhere; }
+.pill { font-family: var(--font-mono); font-size: 11px; font-weight: 500; padding: 1px 8px; border-radius: 999px; border: 1.5px solid; }
+.pill.ok { color: #1d7a46; border-color: #1d7a46; }
+.pill.throttled { color: var(--accent); border-color: var(--accent); }
+.tallybar { display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.tallybar .ok { background: #1d7a46; }
+.tallybar .throttled { background: var(--accent); }
+.tallynums { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 12px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill.ok { color: #5cc98a; border-color: #5cc98a; } :root:not([data-theme="light"]) .tallybar .ok { background: #5cc98a; } }
+:root[data-theme="dark"] .pill.ok { color: #5cc98a; border-color: #5cc98a; }
+:root[data-theme="dark"] .tallybar .ok { background: #5cc98a; }
 .callout { border: 1.5px solid var(--line); border-left: 5px solid var(--accent); border-radius: 10px; padding: 10px 14px; max-width: 80ch; }
 .callout h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
 .callout p { margin: 0; line-height: 1.45; }
+.callout p + p, .callout .delivered + p { margin-top: 8px; }
+.callout .delivered { display: grid; gap: 6px; margin-top: 8px; }
 .callout.todo { border-left-style: dashed; }
+.callout .steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; line-height: 1.45; }
+.agent .compare { max-width: 80ch; }
+.agent .compare > .callout { padding: 10px 14px; font-size: inherit; border-radius: 10px; border-left: 5px solid var(--accent); }
 .callout.todo p { color: var(--muted); font-style: italic; }
 
 @media (max-width: 760px) {
@@ -329,17 +350,59 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <div class="shots">
         <figure><img src="screenshots/01-test-email.png" alt="11:25 PM · Test email. Headline, publish date and link match the feed item exactly."><figcaption>11:25 PM · Test email. Headline, publish date and link match the feed item exactly.</figcaption></figure>
         <figure><img src="screenshots/02-first-runs.png" alt="11:28 PM · Zap published and triggering on new feed items."><figcaption>11:28 PM · Zap published and triggering on new feed items.</figcaption></figure>
-        <figure><img src="screenshots/03-zap-history.png" alt="Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent."><figcaption>Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.</figcaption></figure>
-        <figure><img src="screenshots/04-live-run-email.png" alt="A live run: the ‘Dirty Play’ story, checked against its Zap history record."><figcaption>A live run: the ‘Dirty Play’ story, checked against its Zap history record.</figcaption></figure>
+        <figure>
+          <div class="record" role="img" aria-label="Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.">
+            <span class="src">From the Zap history export · 18 Oct, SGT</span>
+            <div class="tallybar" aria-hidden="true"><span class="ok" style="flex: 10"></span><span class="throttled" style="flex: 27"></span></div>
+            <div class="tallynums"><span>37 runs</span><span>10 success</span><span>27 throttled</span></div>
+            <div class="run">
+              <div class="meta"><span class="pill throttled">Throttled</span><span>11:37 PM</span></div>
+              <span class="hl">Location of Dream home games for WNBA Finals still uncertain</span>
+              <span class="meta">ESPN · published 12 Oct 2026 · email never sent</span>
+            </div>
+          </div>
+          <figcaption>Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.</figcaption>
+        </figure>
+        <figure>
+          <div class="record" role="img" aria-label="A live run: the ‘Dirty Play’ story, checked against its Zap history record.">
+            <span class="src">Zap history record · 18 Oct, SGT</span>
+            <div class="run">
+              <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span></div>
+              <span class="hl">“Dirty Play”: NFL and WNBA Reporters Unite Over Dream Star’s Conduct Following Painful Collision With Gabby Williams</span>
+              <span class="meta">Yahoo Sports · published 18 Oct 2026, 03:09 GMT</span>
+            </div>
+            <span>The alert email carried the same headline, publish date and link as this record.</span>
+          </div>
+          <figcaption>A live run: the ‘Dirty Play’ story, checked against its Zap history record.</figcaption>
+        </figure>
       </div>
 
       <h3>Errors I caught (not planned)</h3>
-      <div class="shots">
-        <figure><img src="screenshots/05-wings-url.png" alt="11:40 PM · I tried a team-specific feed for the Dallas Wings."><figcaption>11:40 PM · I tried a team-specific feed for the Dallas Wings.</figcaption></figure>
-        <figure><img src="screenshots/06-no-new-feeds.png" alt="11:53 PM · Zapier found no items in the Wings feed."><figcaption>11:53 PM · Zapier found no items in the Wings feed.</figcaption></figure>
-        <figure><img src="screenshots/07-zap-not-turned-on-404.png" alt="11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide ‘WNBA’ feed."><figcaption>11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide ‘WNBA’ feed.</figcaption></figure>
+      <div class="callout">
+        <h4>How the scope changed</h4>
+        <ol class="steps">
+          <li><strong>League-wide.</strong> I started with every story from a Google News search for ‘WNBA’.</li>
+          <li><strong>One team.</strong> I narrowed the alerts to the Golden State Valkyries, the team in the Finals. Only the alert email’s wording changed (“New story mentioning the Golden State Valkyries”). The feed itself stayed the league-wide ‘WNBA’ search, as every run in Zap history shows, so league-wide stories still came through. At 11:47 PM I changed the wording back to “New WNBA story”.</li>
+          <li><strong>A different team, as a test.</strong> I switched to a Dallas Wings search to see whether a team feed would forward everything about that team, betting news included.</li>
+          <li><strong>Back to league-wide.</strong> The Wings feed failed, so I returned to the ‘WNBA’ search.</li>
+        </ol>
       </div>
-      <p class="after">The first burst also showed three stories sent twice, items weeks old treated as new (the oldest from 26 August), and four apparent fake ‘WATCH LIVE NOW’ streaming pages delivered as successful runs.</p>
+      <div class="compare">
+        <div class="callout">
+          <h4>Expectation (Wings test)</h4>
+          <p>The Zap would forward every new Wings item, including betting and odds stories, so I could compare what came through with what a comms manager actually needs.</p>
+        </div>
+        <div class="callout">
+          <h4>Reality</h4>
+          <p>No items came through at all. Google returned a 404 for the feed, so Zapier could not turn the Zap on, and the test never ran.</p>
+        </div>
+      </div>
+      <div class="shots">
+        <figure><img src="screenshots/05-wings-url.png" alt="11:40 PM · I switched the feed to a Dallas Wings search to test what a team feed would forward."><figcaption>11:40 PM · I switched the feed to a Dallas Wings search to test what a team feed would forward.</figcaption></figure>
+        <figure><img src="screenshots/06-no-new-feeds.png" alt="11:53 PM · Testing the Wings feed, Zapier found no items."><figcaption>11:53 PM · Testing the Wings feed, Zapier found no items.</figcaption></figure>
+        <figure><img src="screenshots/07-zap-not-turned-on-404.png" alt="11:56 PM · Google returned a 404, so Zapier could not turn the Zap on. I went back to the league-wide ‘WNBA’ feed."><figcaption>11:56 PM · Google returned a 404, so Zapier could not turn the Zap on. I went back to the league-wide ‘WNBA’ feed.</figcaption></figure>
+      </div>
+      <p class="after">The first burst also showed three stories triggered twice (each repeat run was throttled, so none reached the inbox twice), items weeks old treated as new (the oldest from 26 August), and four apparent fake ‘WATCH LIVE NOW’ streaming pages: two delivered as successful runs, two throttled.</p>
 
       <h3>Tricky case: fake live-stream pages</h3>
       <div class="callout">
@@ -347,17 +410,41 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         <p>On the next game day, I expect the Zap to forward fake streaming pages to the comms inbox as if they were news, because it matches keywords, not quality. Each will show as a successful run, because technically nothing went wrong.</p>
       </div>
       <div class="shots">
-        <figure><img src="screenshots/08-tricky-case.png" alt="Tricky case: a fake streaming page delivered as an alert, and its run in Zap history."><figcaption>Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.</figcaption></figure>
+        <figure>
+          <div class="record" role="img" aria-label="Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.">
+            <span class="src">Zap history record · 18 Oct, SGT</span>
+            <div class="run">
+              <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span></div>
+              <span class="hl">⊕[ＷＡＴＣＨ ＬＩＶＥ ＮＯＷ]⊕ Atlanta vs Golden State WNBA 𝐋𝐈𝐕𝐄 Updates Ｔｖ Ｃｈａｎｎｅｌ 17 October 2026</span>
+              <span class="meta">Universidad de Córdoba (UCO) · published 17 Oct 2026, 17:43 GMT</span>
+            </div>
+            <span>Marked a success and emailed as a news alert, though it is a streaming spam page.</span>
+          </div>
+          <figcaption>Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.</figcaption>
+        </figure>
       </div>
-      <div class="callout todo">
-        <h4>What actually happened</h4>
-        <p>[To be added after the test]</p>
-      </div>
-
-      <h3>Fix and rerun</h3>
-      <div class="shots">
-        <figure><img src="screenshots/09-fix-url.png" alt="Fix: exclusion terms added to the feed URL, tested in Find new records before republishing."><figcaption>Fix: exclusion terms added to the feed URL, tested in Find new records before republishing.</figcaption></figure>
-        <figure><img src="screenshots/10-after-fix.png" alt="Rerun: Zap history on the next game day, after the fix."><figcaption>Rerun: Zap history on the next game day, after the fix.</figcaption></figure>
+      <div class="callout">
+        <h4>What was delivered (first 37 runs, 18 October)</h4>
+        <p>Four fake streaming pages came through the feed. None was filtered out.</p>
+        <div class="delivered">
+          <div class="run">
+            <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span><span>Delivered as an alert</span></div>
+            <span class="hl">⊕[WATCH LIVE NOW]⊕ Atlanta vs Golden State WNBA LIVE Updates TV Channel</span>
+          </div>
+          <div class="run">
+            <div class="meta"><span class="pill ok">Success</span><span>11:33 PM</span><span>Delivered as an alert</span></div>
+            <span class="hl">[WATCHLIVE]TV!] Golden State vs Atlanta WNBA LIVE Streaming TV Channel</span>
+          </div>
+          <div class="run">
+            <div class="meta"><span class="pill throttled">Throttled</span><span>11:45 PM</span><span>Not sent</span></div>
+            <span class="hl">⊕[WATCH LIVE NOW]⊕ Atlanta Dream vs Golden State Valkyries WNBA Live TV Channel</span>
+          </div>
+          <div class="run">
+            <div class="meta"><span class="pill throttled">Throttled</span><span>11:56 PM</span><span>Not sent</span></div>
+            <span class="hl">Golden State Valkyries vs Atlanta Dream WNBA live: … look to seize control of thrilling …</span>
+          </div>
+        </div>
+        <p><strong>Expected vs delivered:</strong> as expected, the Zap treated spam as news. Both fake pages that got past the sending limit were emailed and marked Success. The other two were stopped only by the free plan’s throttle, not by any check, so they would have been sent too.</p>
       </div>
     </div>
   </section>
