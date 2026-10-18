@@ -166,6 +166,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .agent { overflow: auto; min-height: 0; flex: 1; display: grid; gap: 14px; align-content: start; padding-right: 4px; }
 .agent h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; text-wrap: balance; }
 .agent h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 10px 0 0; padding-top: 12px; border-top: 1.5px solid var(--line); }
+.slide.tall { aspect-ratio: auto; }
+.slide.tall .agent { overflow: visible; flex: none; }
 .logpage { display: grid; gap: 14px; align-content: start; }
 .agent .logpage h3 { margin: 4px 0 0; padding-top: 0; border-top: 0; }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1.5px solid var(--line); }
@@ -538,6 +540,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       $(t.getAttribute("aria-controls")).hidden = !on;
     });
     if (tab.id === "tab-trigger") renderSheet();
+    // The agent log grows to its full length instead of scrolling inside the 16:9 slide.
+    document.querySelector(".slide").classList.toggle("tall", tab.id === "tab-agent");
   }
   tabs.forEach((t, i) => {
     t.addEventListener("click", () => showTab(t));
@@ -580,16 +584,16 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   /* ---------- Tab 4: agent log, one section per page ---------- */
   const logPages = [...document.querySelectorAll(".logpage")];
   let logAt = 0;
-  function showLogPage(n) {
+  function showLogPage(n, jump) {
     logAt = Math.max(0, Math.min(logPages.length - 1, n));
     logPages.forEach((p, i) => p.hidden = i !== logAt);
     $("log-label").textContent = `${logAt + 1} of ${logPages.length} · ${logPages[logAt].getAttribute("aria-label")}`;
     $("log-prev").disabled = logAt === 0;
     $("log-next").disabled = logAt === logPages.length - 1;
-    document.querySelector(".agent").scrollTop = 0;
+    if (jump) $("tab-agent").scrollIntoView({ block: "start" });
   }
-  $("log-prev").addEventListener("click", () => showLogPage(logAt - 1));
-  $("log-next").addEventListener("click", () => showLogPage(logAt + 1));
+  $("log-prev").addEventListener("click", () => showLogPage(logAt - 1, true));
+  $("log-next").addEventListener("click", () => showLogPage(logAt + 1, true));
   showLogPage(0);
 
   /* ---------- Tab 4: screenshots ---------- */
