@@ -75,7 +75,10 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 
 .tabgroup .tab .step { color: var(--g); font-weight: 600; }
 /* Author tag, top right of the slide */
 .slide { position: relative; }
-.pstag { position: absolute; top: 16px; right: 20px; margin: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; padding: 4px 10px; border-radius: 4px; color: var(--ps5); background: var(--ps5-bg); border: 1px solid var(--ps5); }
+:root { --tag: #1d6b4a; --tag-bg: #e3f3ea; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --tag: #7fd3a6; --tag-bg: #16301f; } }
+:root[data-theme="dark"] { --tag: #7fd3a6; --tag-bg: #16301f; }
+.pstag { position: absolute; top: 16px; right: 20px; margin: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; padding: 4px 10px; border-radius: 4px; color: var(--tag); background: var(--tag-bg); border: 1px solid var(--tag); }
 @media (max-width: 760px) { .pstag { position: static; align-self: flex-start; } }
 .grouplabel { align-self: flex-start; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: var(--g); background: var(--g-bg); }
 .tabgroup.wk7 { --g: var(--wk7); --g-bg: var(--wk7-bg); }
