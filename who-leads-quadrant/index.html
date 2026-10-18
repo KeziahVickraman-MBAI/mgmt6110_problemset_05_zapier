@@ -415,6 +415,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     document.querySelectorAll(".drop, #tray").forEach(el => el.replaceChildren());
     for (const it of items) container(it.zone).append(chip(it));
     if (!items.length) $("tray").append(starter());
+    // While the board is empty the "Start here" box offers the loaders, so don't repeat them in the button row.
+    ["examples", "group2", "ps5"].forEach(id => $(id).hidden = !items.length);
     document.querySelectorAll(".zone").forEach(z => {
       z.querySelector(".n").textContent = items.filter(i => i.zone === z.dataset.zone).length || "";
       z.classList.toggle("target", !!picked);
