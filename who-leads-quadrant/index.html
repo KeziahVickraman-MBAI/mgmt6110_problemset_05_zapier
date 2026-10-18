@@ -64,6 +64,18 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 
 .tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 8px 14px; color: var(--muted); margin-bottom: -1.5px; }
 .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 .tab .step { font-family: var(--font-mono); font-size: 12px; margin-right: 6px; }
+/* Tab groups: Week 7 AIS work (tabs 1-2) and Problem Set 5 work (tabs 3-4) */
+:root { --wk7: #1f5f8b; --wk7-bg: #e2eef7; --ps5: #8a5300; --ps5-bg: #fbefd8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --wk7: #8fc3ea; --wk7-bg: #1a2c3c; --ps5: #f0c06e; --ps5-bg: #3a2c14; } }
+:root[data-theme="dark"] { --wk7: #8fc3ea; --wk7-bg: #1a2c3c; --ps5: #f0c06e; --ps5-bg: #3a2c14; }
+.tabs { gap: 16px; align-items: flex-end; }
+.tabgroup { display: flex; flex-direction: column; gap: 6px; margin-bottom: -1.5px; }
+.grouptabs { display: flex; gap: 4px; flex-wrap: wrap; border-top: 3px solid var(--g); border-radius: 2px; }
+.tabgroup .tab { margin-bottom: 0; }
+.tabgroup .tab .step { color: var(--g); font-weight: 600; }
+.grouplabel { align-self: flex-start; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: var(--g); background: var(--g-bg); }
+.tabgroup.wk7 { --g: var(--wk7); --g-bg: var(--wk7-bg); }
+.tabgroup.ps5 { --g: var(--ps5); --g-bg: var(--ps5-bg); }
 
 .panel { display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0; }
 
@@ -168,6 +180,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .agent h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 10px 0 0; padding-top: 12px; border-top: 1.5px solid var(--line); }
 .slide.tall { aspect-ratio: auto; }
 .slide.tall .agent { overflow: visible; flex: none; }
+.slide.tall .note { overflow: visible; }
+.slide.tall .disagree { flex: none; }
 .logpage { display: grid; gap: 14px; align-content: start; }
 .agent .logpage h3 { margin: 4px 0 0; padding-top: 0; border-top: 0; }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1.5px solid var(--line); }
@@ -241,10 +255,20 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Steps">
-    <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true"><span class="step">1</span>Place problems</button>
-    <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false"><span class="step">2</span>Trigger and action</button>
-    <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1"><span class="step">3</span>Q1d) Where we disagree</button>
-    <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1"><span class="step">4</span>My agent log</button>
+    <div class="tabgroup wk7" role="presentation">
+      <span class="grouplabel" aria-hidden="true">Week 7 AIS</span>
+      <div class="grouptabs" role="presentation">
+        <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true" aria-description="Week 7 AIS"><span class="step">1</span>Place problems</button>
+        <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false" aria-description="Week 7 AIS"><span class="step">2</span>Trigger and action</button>
+      </div>
+    </div>
+    <div class="tabgroup ps5" role="presentation">
+      <span class="grouplabel" aria-hidden="true">Problem Set 5</span>
+      <div class="grouptabs" role="presentation">
+        <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1" aria-description="Problem Set 5"><span class="step">3</span>Q1d) Where we disagree</button>
+        <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1" aria-description="Problem Set 5"><span class="step">4</span>My agent log</button>
+      </div>
+    </div>
   </nav>
 
   <section class="panel" id="panel-place" role="tabpanel" aria-labelledby="tab-place">
@@ -540,8 +564,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       $(t.getAttribute("aria-controls")).hidden = !on;
     });
     if (tab.id === "tab-trigger") renderSheet();
-    // The agent log grows to its full length instead of scrolling inside the 16:9 slide.
-    document.querySelector(".slide").classList.toggle("tall", tab.id === "tab-agent");
+    // Tabs 3 and 4 grow to their full length instead of scrolling inside the 16:9 slide.
+    document.querySelector(".slide").classList.toggle("tall", tab.id === "tab-agent" || tab.id === "tab-disagree");
   }
   tabs.forEach((t, i) => {
     t.addEventListener("click", () => showTab(t));
