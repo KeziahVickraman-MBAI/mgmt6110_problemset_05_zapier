@@ -73,6 +73,10 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 
 .grouptabs { display: flex; gap: 4px; flex-wrap: wrap; border-top: 3px solid var(--g); border-radius: 2px; }
 .tabgroup .tab { margin-bottom: 0; }
 .tabgroup .tab .step { color: var(--g); font-weight: 600; }
+/* Author tag, top right of the slide */
+.slide { position: relative; }
+.pstag { position: absolute; top: 16px; right: 20px; margin: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; padding: 4px 10px; border-radius: 4px; color: var(--ps5); background: var(--ps5-bg); border: 1px solid var(--ps5); }
+@media (max-width: 760px) { .pstag { position: static; align-self: flex-start; } }
 .grouplabel { align-self: flex-start; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: var(--g); background: var(--g-bg); }
 .tabgroup.wk7 { --g: var(--wk7); --g-bg: var(--wk7-bg); }
 .tabgroup.ps5 { --g: var(--ps5); --g-bg: var(--ps5-bg); }
@@ -243,6 +247,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 </head>
 <body>
 <main class="slide">
+  <p class="pstag">Problem Set 05 | Keziah Vickraman</p>
   <header>
     <div>
       <p class="eyebrow">Place a problem · your turn</p>
