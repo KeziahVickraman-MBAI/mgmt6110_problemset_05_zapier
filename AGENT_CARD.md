@@ -2,7 +2,7 @@
 
 Student: Keziah Sherlyn Vanessa Vickraman · Course: MGMT 6110 · Problem Set 5
 
-Live link: 
+Vercel link: https://mgmt6110problemset05zapier.vercel.app/
 
 ### AGENT CARD - what it does and does NOT do
 My agent card | WNBA Full Court Press | finished *[18 October 23:28:47]*
