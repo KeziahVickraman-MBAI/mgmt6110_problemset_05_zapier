@@ -143,6 +143,15 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* Tab 2: trigger / action sheet */
 .sheet-intro { margin: 0; color: var(--muted); max-width: 75ch; }
+/* Tab 2: collaboration log and reflection under the sheet */
+.collab { display: grid; gap: 12px; padding-top: 16px; border-top: 1.5px solid var(--line); }
+.collab h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 4px 0 0; }
+.loglist { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.loglist > div { border: 1.5px solid var(--line); border-left: 5px solid var(--tag); border-radius: 10px; padding: 10px 14px; }
+.loglist dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.loglist dd { margin: 0; line-height: 1.45; }
+.reflection { margin: 0; max-width: 85ch; line-height: 1.5; padding: 12px 16px; border-radius: 10px; background: var(--tag-bg); }
+@media (max-width: 760px) { .loglist { grid-template-columns: 1fr; } }
 .sheet { display: grid; gap: 10px; overflow: auto; flex: 1; min-height: 0; padding-right: 4px; }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1.2fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; }
 .row.person { border-left: 5px solid var(--person-edge); }
@@ -192,6 +201,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .agent h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 10px 0 0; padding-top: 12px; border-top: 1.5px solid var(--line); }
 .slide.tall { aspect-ratio: auto; }
 .slide.tall .agent { overflow: visible; flex: none; }
+.slide.tall .sheet { overflow: visible; flex: none; }
 .slide.tall .note { overflow: visible; }
 .slide.tall .disagree { flex: none; }
 .logpage { display: grid; gap: 14px; align-content: start; }
@@ -321,6 +331,19 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   <section class="panel" id="panel-trigger" role="tabpanel" aria-labelledby="tab-trigger" hidden>
     <p class="sheet-intro">For each problem, write the event that starts the work and what happens next. Problems are listed in quadrant order.</p>
     <div class="sheet" id="sheet"></div>
+
+    <section class="collab" aria-labelledby="collab-title">
+      <h2 id="collab-title">Quick collaboration log</h2>
+      <dl class="loglist">
+        <div><dt>What I delegated to AI</dt><dd>Building and laying out this page (the quadrant board, the tabs and the agent log), turning my Zap history export into the run cards, and tightening the wording of my write-up.</dd></div>
+        <div><dt>What I checked, and how</dt><dd>Every number on the page against the Zap history export: 37 runs, 10 successes, 27 throttled, and each run time converted to SGT. I also matched each screenshot to its caption and read each alert email against its source link.</dd></div>
+        <div><dt>One AI error I caught</dt><dd>The AI repeated the three “Load…” buttons in both the toolbar and the “Start here” box, so every loader showed up twice on an empty board. I spotted the duplicate and had it removed.</dd></div>
+        <div><dt>Time and cost</dt><dd>About 30 minutes to build and run the Zap (11:25–11:56 PM SGT, 18 October) on Zapier’s free plan, so $0 for the agent. [Add the time spent on the page and any AI tool cost.]</dd></div>
+      </dl>
+
+      <h2>Reflection</h2>
+      <p class="reflection">Full-Court Press fitted the job of relaying every new WNBA story quickly, because each relay has a right answer that I could check against Zap history. It failed on quality and reliability: it forwarded fake streaming pages as news, treated weeks-old stories as new, and lost 27 alerts to the free plan’s sending limit without any warning. I would add exclusion terms to the feed, move to a plan without the sending cap, and send a daily summary of throttled or failed runs so a person sees what the agent missed.</p>
+    </section>
   </section>
 
   <section class="panel" id="panel-disagree" role="tabpanel" aria-labelledby="tab-disagree" hidden>
@@ -553,7 +576,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   const WNBA = [
     { text: "Problem Set 05: WNBA Full Court Press", zone: "q3",
       trigger: "A new item in a WNBA RSS feed (RSS by Zapier: New Item in Feed)",
-      action: "Gmail (Send Email) emails the new WNBA news item to me. It must never email anyone but me: the To field is fixed to my own address. I read each email the same day and compare it to the source link.",
+      action: "Email by Zapier (Send Outbound Email) emails the new WNBA news item to me. It must never email anyone but me: the To field is fixed to my own address. I read each email the same day and compare it to the source link.",
       why: "It has a right answer: the email either matches the source item or it doesn't, so a person only needs to spot-check the result." }
   ];
   let items = load(KEY) || [];
@@ -580,8 +603,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       $(t.getAttribute("aria-controls")).hidden = !on;
     });
     if (tab.id === "tab-trigger") renderSheet();
-    // Tabs 3 and 4 grow to their full length instead of scrolling inside the 16:9 slide.
-    document.querySelector(".slide").classList.toggle("tall", tab.id === "tab-agent" || tab.id === "tab-disagree");
+    // Tabs 2, 3 and 4 grow to their full length instead of scrolling inside the 16:9 slide.
+    document.querySelector(".slide").classList.toggle("tall", tab.id !== "tab-place");
   }
   tabs.forEach((t, i) => {
     t.addEventListener("click", () => showTab(t));
@@ -796,7 +819,10 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     const id = `${key}-${it.id}`;
     const l = document.createElement("label"); l.htmlFor = id; l.textContent = label;
     const t = document.createElement("textarea"); t.id = id; t.rows = 2; t.placeholder = placeholder; t.value = it[key];
-    t.addEventListener("input", () => { it[key] = t.value; save(); });
+    // Grow each box to fit its text, so long entries are never cut off.
+    const fit = () => { t.style.height = "auto"; t.style.height = t.scrollHeight + 3 + "px"; };
+    t.addEventListener("input", () => { it[key] = t.value; save(); fit(); });
+    requestAnimationFrame(fit);
     wrap.append(l, t);
     return wrap;
   }
