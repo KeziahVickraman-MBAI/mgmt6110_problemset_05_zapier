@@ -166,6 +166,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .agent { overflow: auto; min-height: 0; flex: 1; display: grid; gap: 14px; align-content: start; padding-right: 4px; }
 .agent h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; text-wrap: balance; }
 .agent h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 10px 0 0; padding-top: 12px; border-top: 1.5px solid var(--line); }
+.logpage { display: grid; gap: 14px; align-content: start; }
+.agent .logpage h3 { margin: 4px 0 0; padding-top: 0; border-top: 0; }
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1.5px solid var(--line); }
+.pager .pagelabel { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: center; }
+.pager button:disabled { opacity: .4; cursor: default; }
 .agent .intro { margin: 0; color: var(--muted); max-width: 80ch; line-height: 1.45; }
 .agent .after { margin: 0; max-width: 80ch; line-height: 1.45; }
 .shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -237,7 +242,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true"><span class="step">1</span>Place problems</button>
     <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false"><span class="step">2</span>Trigger and action</button>
     <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1"><span class="step">3</span>Q1d) Where we disagree</button>
-    <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1"><span class="step">4</span>My agent</button>
+    <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1"><span class="step">4</span>My agent log</button>
   </nav>
 
   <section class="panel" id="panel-place" role="tabpanel" aria-labelledby="tab-place">
@@ -343,9 +348,10 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   <section class="panel" id="panel-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
     <div class="agent">
-      <h2>My agent: Full-Court Press — runs, tricky case and fix</h2>
+      <h2>My agent log: Full-Court Press</h2>
       <p class="intro">Full-Court Press emails each new story from a Google News RSS search for ‘WNBA’ to the league office’s communications manager (role-played by me). Built on Zapier’s free plan: RSS by Zapier (New Item in Feed) → Email by Zapier (Send Outbound Email). All times SGT, 18 October 2026.</p>
 
+      <section class="logpage" aria-label="Setup and runs">
       <h3>Setup and runs</h3>
       <div class="shots">
         <figure><img src="screenshots/01-test-email.png" alt="11:25 PM · Test email. Headline, publish date and link match the feed item exactly."><figcaption>11:25 PM · Test email. Headline, publish date and link match the feed item exactly.</figcaption></figure>
@@ -377,6 +383,9 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         </figure>
       </div>
 
+      </section>
+
+      <section class="logpage" aria-label="Errors I caught" hidden>
       <h3>Errors I caught (not planned)</h3>
       <div class="callout">
         <h4>How the scope changed</h4>
@@ -404,6 +413,9 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       </div>
       <p class="after">The first burst also showed three stories triggered twice (each repeat run was throttled, so none reached the inbox twice), items weeks old treated as new (the oldest from 26 August), and four apparent fake ‘WATCH LIVE NOW’ streaming pages: two delivered as successful runs, two throttled.</p>
 
+      </section>
+
+      <section class="logpage" aria-label="Tricky case" hidden>
       <h3>Tricky case: fake live-stream pages</h3>
       <div class="callout">
         <h4>Expectation (written before the test)</h4>
@@ -446,7 +458,13 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         </div>
         <p><strong>Expected vs delivered:</strong> as expected, the Zap treated spam as news. Both fake pages that got past the sending limit were emailed and marked Success. The other two were stopped only by the free plan’s throttle, not by any check, so they would have been sent too.</p>
       </div>
+      </section>
     </div>
+    <nav class="pager" aria-label="Agent log pages">
+      <button type="button" id="log-prev">← Previous</button>
+      <span class="pagelabel" id="log-label" aria-live="polite"></span>
+      <button type="button" id="log-next" class="primary">Next →</button>
+    </nav>
   </section>
 </main>
 
@@ -558,6 +576,21 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   $("show-group").addEventListener("click", () => showPlacement("group"));
   $("show-mine").addEventListener("click", () => showPlacement("mine"));
   showPlacement("group");
+
+  /* ---------- Tab 4: agent log, one section per page ---------- */
+  const logPages = [...document.querySelectorAll(".logpage")];
+  let logAt = 0;
+  function showLogPage(n) {
+    logAt = Math.max(0, Math.min(logPages.length - 1, n));
+    logPages.forEach((p, i) => p.hidden = i !== logAt);
+    $("log-label").textContent = `${logAt + 1} of ${logPages.length} · ${logPages[logAt].getAttribute("aria-label")}`;
+    $("log-prev").disabled = logAt === 0;
+    $("log-next").disabled = logAt === logPages.length - 1;
+    document.querySelector(".agent").scrollTop = 0;
+  }
+  $("log-prev").addEventListener("click", () => showLogPage(logAt - 1));
+  $("log-next").addEventListener("click", () => showLogPage(logAt + 1));
+  showLogPage(0);
 
   /* ---------- Tab 4: screenshots ---------- */
   // Swap any screenshot that fails to load for a same-size placeholder naming the missing file.
