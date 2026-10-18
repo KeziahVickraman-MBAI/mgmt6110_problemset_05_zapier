@@ -162,8 +162,27 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .note mark { background: var(--hover); color: inherit; padding: 0 2px; border-radius: 2px; }
 .bottomline { font-weight: 600; }
 
+/* Tab 4: my agent's runs, tricky case and fix */
+.agent { overflow: auto; min-height: 0; flex: 1; display: grid; gap: 14px; align-content: start; padding-right: 4px; }
+.agent h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; text-wrap: balance; }
+.agent h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 10px 0 0; padding-top: 12px; border-top: 1.5px solid var(--line); }
+.agent .intro { margin: 0; color: var(--muted); max-width: 80ch; line-height: 1.45; }
+.agent .after { margin: 0; max-width: 80ch; line-height: 1.45; }
+.shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.shots figure { margin: 0; display: grid; gap: 8px; align-content: start; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; background: var(--slide); }
+.shots img, .shots .ph { display: block; width: 100%; aspect-ratio: 16 / 10; border-radius: 6px; }
+.shots img { object-fit: contain; background: var(--bg); }
+.shots .ph { border: 2px dashed var(--chip-edge); color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+.shots figcaption { font-size: 14px; line-height: 1.4; }
+.callout { border: 1.5px solid var(--line); border-left: 5px solid var(--accent); border-radius: 10px; padding: 10px 14px; max-width: 80ch; }
+.callout h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.callout p { margin: 0; line-height: 1.45; }
+.callout.todo { border-left-style: dashed; }
+.callout.todo p { color: var(--muted); font-style: italic; }
+
 @media (max-width: 760px) {
   .slide { aspect-ratio: auto; padding: 20px 16px; }
+  .shots { grid-template-columns: 1fr; }
   .disagree, .compare { grid-template-columns: 1fr; }
   .matrix { grid-template-columns: 1fr 1fr; }
   .rowhead, .corner { display: none; }
@@ -197,6 +216,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <button class="tab" role="tab" id="tab-place" aria-controls="panel-place" aria-selected="true"><span class="step">1</span>Place problems</button>
     <button class="tab" role="tab" id="tab-trigger" aria-controls="panel-trigger" aria-selected="false"><span class="step">2</span>Trigger and action</button>
     <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1"><span class="step">3</span>Q1d) Where we disagree</button>
+    <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1"><span class="step">4</span>My agent</button>
   </nav>
 
   <section class="panel" id="panel-place" role="tabpanel" aria-labelledby="tab-place">
@@ -299,6 +319,48 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       </aside>
     </div>
   </section>
+
+  <section class="panel" id="panel-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
+    <div class="agent">
+      <h2>My agent: Full-Court Press — runs, tricky case and fix</h2>
+      <p class="intro">Full-Court Press emails each new story from a Google News RSS search for ‘WNBA’ to the league office’s communications manager (role-played by me). Built on Zapier’s free plan: RSS by Zapier (New Item in Feed) → Email by Zapier (Send Outbound Email). All times SGT, 18 October 2026.</p>
+
+      <h3>Setup and runs</h3>
+      <div class="shots">
+        <figure><img src="screenshots/01-test-email.png" alt="11:25 PM · Test email. Headline, publish date and link match the feed item exactly."><figcaption>11:25 PM · Test email. Headline, publish date and link match the feed item exactly.</figcaption></figure>
+        <figure><img src="screenshots/02-first-runs.png" alt="11:28 PM · Zap published and triggering on new feed items."><figcaption>11:28 PM · Zap published and triggering on new feed items.</figcaption></figure>
+        <figure><img src="screenshots/03-zap-history.png" alt="Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent."><figcaption>Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.</figcaption></figure>
+        <figure><img src="screenshots/04-live-run-email.png" alt="A live run: the ‘Dirty Play’ story, checked against its Zap history record."><figcaption>A live run: the ‘Dirty Play’ story, checked against its Zap history record.</figcaption></figure>
+      </div>
+
+      <h3>Errors I caught (not planned)</h3>
+      <div class="shots">
+        <figure><img src="screenshots/05-wings-url.png" alt="11:40 PM · I tried a team-specific feed for the Dallas Wings."><figcaption>11:40 PM · I tried a team-specific feed for the Dallas Wings.</figcaption></figure>
+        <figure><img src="screenshots/06-no-new-feeds.png" alt="11:53 PM · Zapier found no items in the Wings feed."><figcaption>11:53 PM · Zapier found no items in the Wings feed.</figcaption></figure>
+        <figure><img src="screenshots/07-zap-not-turned-on-404.png" alt="11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide ‘WNBA’ feed."><figcaption>11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide ‘WNBA’ feed.</figcaption></figure>
+      </div>
+      <p class="after">The first burst also showed three stories sent twice, items weeks old treated as new (the oldest from 26 August), and four apparent fake ‘WATCH LIVE NOW’ streaming pages delivered as successful runs.</p>
+
+      <h3>Tricky case: fake live-stream pages</h3>
+      <div class="callout">
+        <h4>Expectation (written before the test)</h4>
+        <p>On the next game day, I expect the Zap to forward fake streaming pages to the comms inbox as if they were news, because it matches keywords, not quality. Each will show as a successful run, because technically nothing went wrong.</p>
+      </div>
+      <div class="shots">
+        <figure><img src="screenshots/08-tricky-case.png" alt="Tricky case: a fake streaming page delivered as an alert, and its run in Zap history."><figcaption>Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.</figcaption></figure>
+      </div>
+      <div class="callout todo">
+        <h4>What actually happened</h4>
+        <p>[To be added after the test]</p>
+      </div>
+
+      <h3>Fix and rerun</h3>
+      <div class="shots">
+        <figure><img src="screenshots/09-fix-url.png" alt="Fix: exclusion terms added to the feed URL, tested in Find new records before republishing."><figcaption>Fix: exclusion terms added to the feed URL, tested in Find new records before republishing.</figcaption></figure>
+        <figure><img src="screenshots/10-after-fix.png" alt="Rerun: Zap history on the next game day, after the fix."><figcaption>Rerun: Zap history on the next game day, after the fix.</figcaption></figure>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -362,7 +424,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   const sorted = () => ORDER.flatMap(z => items.filter(i => i.zone === z));
 
   /* ---------- Tabs ---------- */
-  const tabs = [$("tab-place"), $("tab-trigger"), $("tab-disagree")];
+  const tabs = [$("tab-place"), $("tab-trigger"), $("tab-disagree"), $("tab-agent")];
   function showTab(tab) {
     tabs.forEach(t => {
       const on = t === tab;
@@ -409,6 +471,18 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   $("show-group").addEventListener("click", () => showPlacement("group"));
   $("show-mine").addEventListener("click", () => showPlacement("mine"));
   showPlacement("group");
+
+  /* ---------- Tab 4: screenshots ---------- */
+  // Swap any screenshot that fails to load for a same-size placeholder naming the missing file.
+  function missingShot(img) {
+    const ph = document.createElement("div"); ph.className = "ph";
+    ph.textContent = "Screenshot to add: " + img.getAttribute("src").split("/").pop();
+    img.replaceWith(ph);
+  }
+  document.querySelectorAll(".shots img").forEach(img => {
+    if (img.complete && !img.naturalWidth) missingShot(img);
+    else img.addEventListener("error", () => missingShot(img));
+  });
 
   /* ---------- Tab 1: placement ---------- */
   function render() {
