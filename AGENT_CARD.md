@@ -5,7 +5,7 @@ Student: Keziah Sherlyn Vanessa Vickraman · Course: MGMT 6110 · Problem Set 5
 Vercel link: https://mgmt6110problemset05zapier.vercel.app/
 
 ### AGENT CARD - what it does and does NOT do
-My agent card | WNBA Full Court Press | finished *[18 October 23:28:47]*
+My agent card | Full-Court Press | finished *[18 October 23:28:47]*
 1. The job: Emails each new WNBA news story to the league office’s communications manager (role-played by me) so no story is missed before media calls
 2. The trigger: A new item in a Google News RSS search for “WNBA” (RSS by Zapier, New Item in Feed)
 3. The tools: RSS by Zapier (New Item in Feed); Email by Zapier (Send Outbound Email)
@@ -17,28 +17,33 @@ My agent card | WNBA Full Court Press | finished *[18 October 23:28:47]*
 `Tricky case`: 
 --> fake live-stream pages in the news feed
 
---> Expectation written: 18 October 23:55—before peak periods and the next WNBA Finals periods
+--> Expectation written: 18 October 23:55, before the next WNBA Finals game
 
 `What I am testing`: 
 Full-Court Press forwards every new item in a Google News
-search for "WNBA." I want to see what it does with items that match the search
-but are not news, such as fake "WATCH LIVE NOW" streaming pages posted around
+search for “WNBA.” I want to see what it does with items that match the search
+but are not news, such as fake “WATCH LIVE NOW” streaming pages posted around
 game time. *Four of these already slipped into my first 37 runs.*
 
 `What I expect`: 
 - On the next game day, I expect the Zap to forward fake streaming
-pages to the comms inbox as if they were news stories. The Zap matches keywords, not quality, so any page with "WNBA" in its title counts as a new item. 
+pages to the comms inbox as if they were news stories. The Zap matches keywords, not quality, so any page with “WNBA” in its title counts as a new item. 
 - I expect each one to appear in Zap history as a successful run, because technically nothing went wrong.
 
 `Why it matters`: 
 - A league comms manager would waste review time on spam, and
-the links could lead to scam or illegal streaming sites. A run marked "success"
+the links could lead to scam or illegal streaming sites. A run marked “success”
 is not the same as a useful alert.
 
 `Planned fix`: 
-- Add exclusion terms to the feed URL (for example -stream -watch),test the new URL in a browser and in Zapier's Find new records before publishing, then republish.
+- Add exclusion terms to the feed URL (-stream -watch -live), test the new URL in a browser and in Zapier’s Find new records before publishing, then republish.
 
-`How I will check the fix`: On the following game day, I will compare Zap history before and after the fix and count how many fake streaming pages came through.
+`How I checked the fix`: On Monday 19 October, I compared Zap history before and after the fix and counted how many fake streaming pages came through.
+
+`What happened`: 
+- My expectation held. That morning, before the fix, fake pages were still delivered as successful runs (‘[WATCHLIVE]TV!]’ at 11:34 AM and ‘WNBA Basketball Reddit Streams’ at 12:04 PM).
+- I tested the new feed URL at 12:24 PM and published it as version 5 at 1:44 PM. None of the 22 runs between 1:46 and 2:44 PM was a streaming page, and real news still came through (a Cathy Engelbert story at 2:03 PM).
+- One side effect: at 2:09 PM, a batch of 15 older stories (published between 25 August and 17 October) fired after republishing.
 ---
 
 ### Question 1 Answer
@@ -51,7 +56,7 @@ is not the same as a useful alert.
 2. Second, must people and AI do it together? 
 --> **No**, either can do it alone. All 37 runs finished with no human input during the run. A person could also do the job alone by checking Google News every hour. Nothing in the process requires a person’s judgment before a run can finish.
 
-(c) **The person in the loop**. The agent may fetch and forward stories alone, but a person stays at the gate in two places. First, the league comms manager reads alerts at 10 AM daily and decides whether the league responds. That’s a judgment the agent never makes. The “Dirty Play” story about a player’s conduct is an example: relaying it had a right answer, while deciding whether to respond doesn’t. Second, someone audits Zap history weekly against the feed, checking for throttled runs, duplicates, outdated stories and spam such as the fake “WATCH LIVE NOW” streaming pages, two of which came through as successful runs. This check matters because the agent doesn’t report its own failures: 27 missed alerts produced no warning in the inbox. Zapier did block a broken feed URL with a 404 email when I tried to publish it, but nothing flags a feed that stops producing items once it’s live.
+(c) **The person in the loop**. The agent may fetch and forward stories alone, but a person stays at the gate in two places. First, the league comms manager reads alerts at 10 AM daily and decides whether the league responds. That’s a judgment the agent never makes. The “Dirty Play” story about a player’s conduct is an example: relaying it had a right answer, while deciding whether to respond doesn’t. Second, someone audits Zap history weekly against the feed, checking for throttled runs, duplicates, outdated stories and spam such as the fake “WATCH LIVE NOW” streaming pages, several of which came through as successful runs before I added exclusion terms. This check matters because the agent doesn’t report its own failures: 27 missed alerts produced no warning in the inbox. Zapier did block a broken feed URL with a 404 email when I tried to publish it, but nothing flags a feed that stops producing items once it’s live.
 
 The agent would move to A person decides, AI alongside if it drafted responses or rated each story’s risk, since those have no single right answer. It would move to A person leads, AI inside if it posted holding statements only after the comms manager approved them.
 
