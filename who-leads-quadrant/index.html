@@ -509,12 +509,16 @@ button:disabled { opacity: .4; cursor: default; }
       <h3>Fix and rerun</h3>
       <div class="shots">
         <figure><img src="screenshots/09-fix-url-tested.png" alt="Mon 12:24 PM · Fix tested before publishing: the feed URL now excludes -stream -watch -live. Searching the feed for ‘WATCH’ finds it only in the search terms, not in any story."><figcaption>Mon 12:24 PM · Fix tested before publishing: the feed URL now excludes -stream -watch -live. Searching the feed for ‘WATCH’ finds it only in the search terms, not in any story.</figcaption></figure>
-        <figure><img src="screenshots/09b-fix-published-check.png" alt="Mon 1:44 PM · Published as version 5. Zapier’s check found no new items, so republishing did not resend older stories this time."><figcaption>Mon 1:44 PM · Published as version 5. Zapier’s check found no new items, so republishing did not resend older stories this time.</figcaption></figure>
+        <figure><img src="screenshots/09b-fix-published-check.png" alt="Mon 1:44 PM · Published as version 5. Zapier’s first check found no new items, but at 2:09 PM a batch of 15 older stories fired anyway."><figcaption>Mon 1:44 PM · Published as version 5. Zapier’s first check found no new items, but at 2:09 PM a batch of 15 older stories fired anyway.</figcaption></figure>
         <figure><img src="screenshots/10-after-fix.png" alt="Mon 1:46 PM · Rerun: first run after the fix (version 5), a real news story, successful."><figcaption>Mon 1:46 PM · Rerun: first run after the fix (version 5), a real news story, successful.</figcaption></figure>
       </div>
-      <div class="callout todo">
-        <h4>Result after the next game day</h4>
-        <p>[To be added]</p>
+      <div class="callout">
+        <h4>Result (later on Monday)</h4>
+        <p>At 2:03 PM the fixed Zap delivered a real news story as an alert, so the exclusion terms filtered out the streaming spam without blocking genuine news.</p>
+        <p>My Zap history export backs this up. Before the fix that morning, two fake streaming pages still came through as successful runs (‘[WATCHLIVE]TV!]’ at 11:34 AM and ‘WNBA Basketball Reddit Streams’ at 12:04 PM). After the fix, none of the 22 runs between 1:46 and 2:44 PM had ‘watch’, ‘live stream’ or ‘stream’ in the headline.</p>
+      </div>
+      <div class="shots">
+        <figure><img src="screenshots/11-after-fix-alert.png" alt="Mon 2:03 PM · After the fix: a real news story (Cathy Engelbert on what the WNBA wants from its next commissioner) delivered as an alert."><figcaption>Mon 2:03 PM · After the fix: a real news story (Cathy Engelbert on what the WNBA wants from its next commissioner) delivered as an alert.</figcaption></figure>
       </div>
       </section>
 
