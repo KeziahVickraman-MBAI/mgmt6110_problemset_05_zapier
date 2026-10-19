@@ -208,7 +208,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .agent .logpage h3 { margin: 4px 0 0; padding-top: 0; border-top: 0; }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1.5px solid var(--line); }
 .pager .pagelabel { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: center; }
-.pager button:disabled { opacity: .4; cursor: default; }
+button:disabled { opacity: .4; cursor: default; }
 .agent .intro { margin: 0; color: var(--muted); max-width: 80ch; line-height: 1.45; }
 .agent .after { margin: 0; max-width: 80ch; line-height: 1.45; }
 .shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -217,28 +217,32 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .shots img { object-fit: contain; background: var(--bg); }
 .shots .ph { border: 2px dashed var(--chip-edge); color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
 .shots figcaption { font-size: 14px; line-height: 1.4; }
-/* Zap history records rebuilt from the exported run data, in place of missing screenshots */
-.record { aspect-ratio: 16 / 10; border-radius: 6px; background: var(--bg); padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow: auto; font-size: 13px; line-height: 1.4; }
-.record .src { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.run { background: var(--slide); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
-.run .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-.run .hl { font-weight: 600; overflow-wrap: anywhere; }
-.pill { font-family: var(--font-mono); font-size: 11px; font-weight: 500; padding: 1px 8px; border-radius: 999px; border: 1.5px solid; }
-.pill.ok { color: #1d7a46; border-color: #1d7a46; }
-.pill.throttled { color: var(--accent); border-color: var(--accent); }
-.tallybar { display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px; }
-.tallybar .ok { background: #1d7a46; }
-.tallybar .throttled { background: var(--accent); }
-.tallynums { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 12px; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill.ok { color: #5cc98a; border-color: #5cc98a; } :root:not([data-theme="light"]) .tallybar .ok { background: #5cc98a; } }
-:root[data-theme="dark"] .pill.ok { color: #5cc98a; border-color: #5cc98a; }
-:root[data-theme="dark"] .tallybar .ok { background: #5cc98a; }
 .callout { border: 1.5px solid var(--line); border-left: 5px solid var(--accent); border-radius: 10px; padding: 10px 14px; max-width: 80ch; }
 .callout h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
 .callout p { margin: 0; line-height: 1.45; }
-.callout p + p, .callout .delivered + p { margin-top: 8px; }
-.callout .delivered { display: grid; gap: 6px; margin-top: 8px; }
+.callout p + p { margin-top: 8px; }
 .callout.todo { border-left-style: dashed; }
+/* Tab 4: agent card block and the CSV tool */
+.cardblock { position: relative; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); max-width: 100ch; }
+.cardblock pre { margin: 0; padding: 14px 16px; padding-right: 90px; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.cardblock button { position: absolute; top: 10px; right: 10px; font-size: 13px; padding: 5px 12px; }
+.csvtool { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.filepick { display: inline-flex; align-items: center; gap: 10px; border: 1.5px dashed var(--chip-edge); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.filepick input { font: inherit; font-size: 13px; color: var(--muted); max-width: 100%; }
+.csvsummary { margin: 0; font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-height: 1em; }
+.shots img { max-width: 100%; }
+/* Tab 3: Q1 parts (a) to (c) above the (d) map */
+.q1 { display: grid; gap: 12px; }
+.q1 h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; }
+.q1part { border: 1.5px solid var(--line); border-left: 5px solid var(--ai-edge); border-radius: 10px; padding: 12px 16px; display: grid; gap: 8px; max-width: 100ch; }
+.q1part h3, .q1 .q1d { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; }
+.q1part p { margin: 0; line-height: 1.5; }
+.q1 .q1d { margin-top: 8px; }
+/* Tab 1: my own agent, pinned in its quadrant (not a draggable chip) */
+:root { --accent-bg: #fbecef; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent-bg: #3a1e26; } }
+:root[data-theme="dark"] { --accent-bg: #3a1e26; }
+.mine { align-self: flex-start; max-width: 100%; background: var(--accent-bg); color: var(--ink); border: 1.5px solid var(--accent); border-radius: 6px; padding: 5px 10px; font-size: 14px; line-height: 1.25; font-weight: 600; overflow-wrap: anywhere; cursor: default; }
 .callout .steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; line-height: 1.45; }
 .agent .compare { max-width: 80ch; }
 .agent .compare > .callout { padding: 10px 14px; font-size: inherit; border-radius: 10px; border-left: 5px solid var(--accent); }
@@ -288,7 +292,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <div class="tabgroup ps5" role="presentation">
       <span class="grouplabel" aria-hidden="true">Problem Set 5</span>
       <div class="grouptabs" role="presentation">
-        <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1" aria-description="Problem Set 5"><span class="step">3</span>Q1d) Where we disagree</button>
+        <button class="tab" role="tab" id="tab-disagree" aria-controls="panel-disagree" aria-selected="false" tabindex="-1" aria-description="Problem Set 5"><span class="step">3</span>Q1) Where my agent sits</button>
         <button class="tab" role="tab" id="tab-agent" aria-controls="panel-agent" aria-selected="false" tabindex="-1" aria-description="Problem Set 5"><span class="step">4</span>My agent log</button>
       </div>
     </div>
@@ -305,7 +309,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       <div class="zone ai" data-zone="q2" tabindex="0"><h2>Agents run it, a person judges <span class="n"></span></h2><div class="drop"></div></div>
 
       <div class="rowhead">Work that either of them can do alone</div>
-      <div class="zone ai" data-zone="q3" tabindex="0"><h2>AI alone, with checks <span class="n"></span></h2><div class="drop"></div></div>
+      <div class="zone ai" data-zone="q3" tabindex="0"><h2>AI alone, with checks <span class="n"></span></h2><div class="mine">⭐ My agent: League comms · Relay WNBA news (Full-Court Press)</div><div class="drop"></div></div>
       <div class="zone person" data-zone="q4" tabindex="0"><h2>A person decides, AI alongside <span class="n"></span></h2><div class="drop"></div></div>
     </div>
 
@@ -338,15 +342,33 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         <div><dt>What I delegated to AI</dt><dd>Building and laying out this page (the quadrant board, the tabs and the agent log), turning my Zap history export into the run cards, and tightening the wording of my write-up.</dd></div>
         <div><dt>What I checked, and how</dt><dd>Every number on the page against the Zap history export: 37 runs, 10 successes, 27 throttled, and each run time converted to SGT. I also matched each screenshot to its caption and read each alert email against its source link.</dd></div>
         <div><dt>One AI error I caught</dt><dd>The AI repeated the three “Load…” buttons in both the toolbar and the “Start here” box, so every loader showed up twice on an empty board. I spotted the duplicate and had it removed.</dd></div>
-        <div><dt>Time and cost</dt><dd>About 30 minutes to build and run the Zap (11:25–11:56 PM SGT, 18 October) on Zapier’s free plan, so $0 for the agent. About 3 hours on this page with AI help; the AI tool’s cost is the tokens used, which I am tracking.</dd></div>
+        <div><dt>Time and cost</dt><dd>About 30 minutes to build and run the Zap (11:25–11:56 PM SGT, 18 October), plus about 1.5 hours on 19 October to test the tricky case, fix the feed and rerun it (12:21–1:46 PM SGT), all on Zapier’s free plan, so $0 for the agent. About 3 hours on this page with AI help; the AI tool’s cost is the tokens used, which I am tracking.</dd></div>
       </dl>
 
       <h2>Reflection</h2>
-      <p class="reflection">Full-Court Press fitted the job of relaying every new WNBA story quickly, because each relay has a right answer that I could check against Zap history. It failed on quality and reliability: it forwarded fake streaming pages as news, treated weeks-old stories as new, and lost 27 alerts to the free plan’s sending limit without any warning. I would add exclusion terms to the feed, move to a plan without the sending cap, and send a daily summary of throttled or failed runs so a person sees what the agent missed.</p>
+      <p class="reflection">Full-Court Press fitted the job of relaying every new WNBA story quickly, because each relay has a right answer that I could check against Zap history. It failed on quality and reliability: it forwarded fake streaming pages as news, treated weeks-old stories as new, and lost 27 alerts to the free plan’s sending limit without any warning. I have since added exclusion terms to the feed, and next I would move to a plan without the sending cap and send a daily summary of throttled or failed runs so a person sees what the agent missed.</p>
     </section>
   </section>
 
   <section class="panel" id="panel-disagree" role="tabpanel" aria-labelledby="tab-disagree" hidden>
+    <div class="q1">
+      <h2>Q1 · Where my agent sits on the map</h2>
+      <div class="q1part">
+        <h3>(a) My quadrant</h3>
+        <p>Full-Court Press sits in <em>AI alone, with checks</em> (bottom left).</p>
+      </div>
+      <div class="q1part">
+        <h3>(b) The two questions</h3>
+        <p><strong>Is there a right answer? Yes.</strong> The agent’s job is to relay every new item in a Google News feed for “WNBA” to the league comms inbox, accurately and once. Each run can be checked as right or wrong. In my first run at 11:28 PM on 18 October, the headline, publish date and link in the email matched the feed item exactly, which shows a correct relay. The failures are just as clear: of 37 runs, 27 were throttled by Email by Zapier’s sending limit and never delivered, three stories triggered twice (the repeat runs were throttled), and some “new” items were weeks old. Every success and failure can be checked against Zap history, which is what work with a right answer looks like.</p>
+        <p><strong>Must people and AI do it together? No,</strong> either can do it alone. All 37 runs finished with no human input during the run. A person could also do the job alone by checking Google News every hour. Nothing in the process requires a person’s judgment before a run can finish.</p>
+      </div>
+      <div class="q1part">
+        <h3>(c) The person in the loop</h3>
+        <p>The agent may fetch and forward stories alone, but a person stays at the gate in two places. First, the league comms manager reads alerts at 10 AM daily and decides whether the league responds. That’s a judgment the agent never makes. The “Dirty Play” story about a player’s conduct is an example: relaying it had a right answer, while deciding whether to respond doesn’t. Second, someone audits Zap history weekly against the feed, checking for throttled runs, duplicates, outdated stories and spam such as the fake “WATCH LIVE NOW” streaming pages, two of which came through as successful runs. This check matters because the agent doesn’t report its own failures: 27 missed alerts produced no warning in the inbox. Zapier did block a broken feed URL with a 404 email when I tried to publish it, but nothing flags a feed that stops producing items once it’s live.</p>
+        <p>The agent would move to <em>A person decides, AI alongside</em> if it drafted responses or rated each story’s risk, since those have no single right answer. It would move to <em>A person leads, AI inside</em> if it posted holding statements only after the comms manager approved them.</p>
+      </div>
+      <h3 class="q1d">(d) My group’s view</h3>
+    </div>
     <div class="disagree">
       <div class="dleft">
         <div class="matrix" aria-label="Where Operations: Escalations of Disputes sits">
@@ -414,40 +436,29 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   <section class="panel" id="panel-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
     <div class="agent">
       <h2>My agent log: Full-Court Press</h2>
-      <p class="intro">Full-Court Press emails each new story from a Google News RSS search for ‘WNBA’ to the league office’s communications manager (role-played by me). Built on Zapier’s free plan: RSS by Zapier (New Item in Feed) → Email by Zapier (Send Outbound Email). All times SGT, 18 October 2026.</p>
+      <p class="intro">Built on Zapier’s free plan with one trigger and one action. All times SGT.</p>
 
-      <section class="logpage" aria-label="Setup and runs">
+      <section class="logpage" aria-label="My agent card">
+      <h3>My agent card</h3>
+      <div class="cardblock">
+        <pre id="agent-card-text">My agent card | Full-Court Press | finished 18 October 2026, 11:28 PM
+1. The job: Emails each new WNBA news story to the league office’s communications manager (role-played by me) so no story is missed before media calls
+2. The trigger: A new item in a Google News RSS search for “WNBA” (RSS by Zapier, New Item in Feed)
+3. The tools: RSS by Zapier (New Item in Feed); Email by Zapier (Send Outbound Email)
+4. It must never: Email anyone but me — the To field is fixed to my own address, with no mapped recipient
+5. Where a person checks: The comms manager reviews all alerts at 10 AM daily and decides whether the league responds; Zap history is audited weekly against the feed</pre>
+        <button type="button" id="copy-card">Copy</button>
+      </div>
+      </section>
+
+      <section class="logpage" aria-label="Setup and runs" hidden>
       <h3>Setup and runs</h3>
       <div class="shots">
-        <figure><img src="screenshots/01-test-email.png" alt="11:25 PM · Test email. Headline, publish date and link match the feed item exactly."><figcaption>11:25 PM · Test email. Headline, publish date and link match the feed item exactly.</figcaption></figure>
-        <figure><img src="screenshots/02-first-runs.png" alt="11:28 PM · Zap published and triggering on new feed items."><figcaption>11:28 PM · Zap published and triggering on new feed items.</figcaption></figure>
-        <figure>
-          <div class="record" role="img" aria-label="Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.">
-            <span class="src">From the Zap history export · 18 Oct, SGT</span>
-            <div class="tallybar" aria-hidden="true"><span class="ok" style="flex: 10"></span><span class="throttled" style="flex: 27"></span></div>
-            <div class="tallynums"><span>37 runs</span><span>10 success</span><span>27 throttled</span></div>
-            <div class="run">
-              <div class="meta"><span class="pill throttled">Throttled</span><span>11:37 PM</span></div>
-              <span class="hl">Location of Dream home games for WNBA Finals still uncertain</span>
-              <span class="meta">ESPN · published 12 Oct 2026 · email never sent</span>
-            </div>
-          </div>
-          <figcaption>Zap history: 37 runs between 11:28 and 11:56 PM — 10 succeeded, 27 throttled by Email by Zapier’s sending limit and never sent.</figcaption>
-        </figure>
-        <figure>
-          <div class="record" role="img" aria-label="A live run: the ‘Dirty Play’ story, checked against its Zap history record.">
-            <span class="src">Zap history record · 18 Oct, SGT</span>
-            <div class="run">
-              <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span></div>
-              <span class="hl">“Dirty Play”: NFL and WNBA Reporters Unite Over Dream Star’s Conduct Following Painful Collision With Gabby Williams</span>
-              <span class="meta">Yahoo Sports · published 18 Oct 2026, 03:09 GMT</span>
-            </div>
-            <span>The alert email carried the same headline, publish date and link as this record.</span>
-          </div>
-          <figcaption>A live run: the ‘Dirty Play’ story, checked against its Zap history record.</figcaption>
-        </figure>
+        <figure><img src="screenshots/01-test-email.png" alt="Sun 18 Oct, 11:25 PM · Test email. Headline, publish date and link match the feed item exactly."><figcaption>Sun 18 Oct, 11:25 PM · Test email. Headline, publish date and link match the feed item exactly.</figcaption></figure>
+        <figure><img src="screenshots/02-first-runs.png" alt="Sun 11:28 PM · Zap published and triggering on new feed items."><figcaption>Sun 11:28 PM · Zap published and triggering on new feed items.</figcaption></figure>
+        <figure><img src="screenshots/03-zap-history.png" alt="Mon 19 Oct, 1:44 PM · Zap history: 155 runs so far, each checkable against its feed item."><figcaption>Mon 19 Oct, 1:44 PM · Zap history: 155 runs so far, each checkable against its feed item.</figcaption></figure>
       </div>
-
+      <p class="after">In the first 28 minutes, 37 runs fired: 10 sent and 27 were throttled by Email by Zapier’s sending limit and never delivered. Three stories triggered twice (each repeat run was throttled, so none reached the inbox twice), and some ‘new’ items were weeks old (the oldest from 26 August), because Zapier triggers on items new to it, not newly published.</p>
       </section>
 
       <section class="logpage" aria-label="Errors I caught" hidden>
@@ -458,7 +469,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
           <li><strong>League-wide.</strong> I started with every story from a Google News search for ‘WNBA’.</li>
           <li><strong>One team.</strong> I narrowed the alerts to the Golden State Valkyries, the team in the Finals. Only the alert email’s wording changed (“New story mentioning the Golden State Valkyries”). The feed itself stayed the league-wide ‘WNBA’ search, as every run in Zap history shows, so league-wide stories still came through. At 11:47 PM I changed the wording back to “New WNBA story”.</li>
           <li><strong>A different team, as a test.</strong> I switched to a Dallas Wings search to see whether a team feed would forward everything about that team, betting news included.</li>
-          <li><strong>Back to league-wide.</strong> The Wings feed failed, so I returned to the ‘WNBA’ search.</li>
+          <li><strong>Back to league-wide.</strong> The Wings feed failed, so I returned to the ‘WNBA’ search and reframed the job as league comms.</li>
         </ol>
       </div>
       <div class="compare">
@@ -472,57 +483,52 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         </div>
       </div>
       <div class="shots">
-        <figure><img src="screenshots/05-wings-url.png" alt="11:40 PM · I switched the feed to a Dallas Wings search to test what a team feed would forward."><figcaption>11:40 PM · I switched the feed to a Dallas Wings search to test what a team feed would forward.</figcaption></figure>
-        <figure><img src="screenshots/06-no-new-feeds.png" alt="11:53 PM · Testing the Wings feed, Zapier found no items."><figcaption>11:53 PM · Testing the Wings feed, Zapier found no items.</figcaption></figure>
-        <figure><img src="screenshots/07-zap-not-turned-on-404.png" alt="11:56 PM · Google returned a 404, so Zapier could not turn the Zap on. I went back to the league-wide ‘WNBA’ feed."><figcaption>11:56 PM · Google returned a 404, so Zapier could not turn the Zap on. I went back to the league-wide ‘WNBA’ feed.</figcaption></figure>
+        <figure><img src="screenshots/05-wings-url.png" alt="Sun 11:40 PM · I tried a team-specific feed for the Dallas Wings."><figcaption>Sun 11:40 PM · I tried a team-specific feed for the Dallas Wings.</figcaption></figure>
+        <figure><img src="screenshots/06-no-new-feeds-wings.png" alt="Sun 11:53 PM · Zapier found no items in the Wings feed."><figcaption>Sun 11:53 PM · Zapier found no items in the Wings feed.</figcaption></figure>
+        <figure><img src="screenshots/07-zap-not-turned-on-404.png" alt="Sun 11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide feed and reframed the job as league comms."><figcaption>Sun 11:56 PM · Google returned a 404, so Zapier refused to turn the Zap on. I returned to the league-wide feed and reframed the job as league comms.</figcaption></figure>
       </div>
-      <p class="after">The first burst also showed three stories triggered twice (each repeat run was throttled, so none reached the inbox twice), items weeks old treated as new (the oldest from 26 August), and four apparent fake ‘WATCH LIVE NOW’ streaming pages: two delivered as successful runs, two throttled.</p>
-
       </section>
 
       <section class="logpage" aria-label="Tricky case" hidden>
       <h3>Tricky case: fake live-stream pages</h3>
       <div class="callout">
-        <h4>Expectation (written before the test)</h4>
+        <h4>Expectation (written 18 October, 11:55 PM, before the test)</h4>
         <p>On the next game day, I expect the Zap to forward fake streaming pages to the comms inbox as if they were news, because it matches keywords, not quality. Each will show as a successful run, because technically nothing went wrong.</p>
       </div>
       <div class="shots">
-        <figure>
-          <div class="record" role="img" aria-label="Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.">
-            <span class="src">Zap history record · 18 Oct, SGT</span>
-            <div class="run">
-              <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span></div>
-              <span class="hl">⊕[ＷＡＴＣＨ ＬＩＶＥ ＮＯＷ]⊕ Atlanta vs Golden State WNBA 𝐋𝐈𝐕𝐄 Updates Ｔｖ Ｃｈａｎｎｅｌ 17 October 2026</span>
-              <span class="meta">Universidad de Córdoba (UCO) · published 17 Oct 2026, 17:43 GMT</span>
-            </div>
-            <span>Marked a success and emailed as a news alert, though it is a streaming spam page.</span>
-          </div>
-          <figcaption>Tricky case: a fake streaming page delivered as an alert, and its run in Zap history.</figcaption>
-        </figure>
+        <figure><img src="screenshots/08-tricky-case-email.png" alt="Mon 11:35 AM · As expected: a fake ‘[WATCHLIVE]TV!’ streaming page delivered as a news alert."><figcaption>Mon 11:35 AM · As expected: a fake ‘[WATCHLIVE]TV!’ streaming page delivered as a news alert.</figcaption></figure>
+        <figure><img src="screenshots/08b-tricky-case-history.png" alt="The same item in Zap history (version 4): marked Successful. A successful run is not the same as a useful alert."><figcaption>The same item in Zap history (version 4): marked Successful. A successful run is not the same as a useful alert.</figcaption></figure>
       </div>
       <div class="callout">
-        <h4>What was delivered (first 37 runs, 18 October)</h4>
-        <p>Four fake streaming pages came through the feed. None was filtered out.</p>
-        <div class="delivered">
-          <div class="run">
-            <div class="meta"><span class="pill ok">Success</span><span>11:28 PM</span><span>Delivered as an alert</span></div>
-            <span class="hl">⊕[WATCH LIVE NOW]⊕ Atlanta vs Golden State WNBA LIVE Updates TV Channel</span>
-          </div>
-          <div class="run">
-            <div class="meta"><span class="pill ok">Success</span><span>11:33 PM</span><span>Delivered as an alert</span></div>
-            <span class="hl">[WATCHLIVE]TV!] Golden State vs Atlanta WNBA LIVE Streaming TV Channel</span>
-          </div>
-          <div class="run">
-            <div class="meta"><span class="pill throttled">Throttled</span><span>11:45 PM</span><span>Not sent</span></div>
-            <span class="hl">⊕[WATCH LIVE NOW]⊕ Atlanta Dream vs Golden State Valkyries WNBA Live TV Channel</span>
-          </div>
-          <div class="run">
-            <div class="meta"><span class="pill throttled">Throttled</span><span>11:56 PM</span><span>Not sent</span></div>
-            <span class="hl">Golden State Valkyries vs Atlanta Dream WNBA live: … look to seize control of thrilling …</span>
-          </div>
-        </div>
-        <p><strong>Expected vs delivered:</strong> as expected, the Zap treated spam as news. Both fake pages that got past the sending limit were emailed and marked Success. The other two were stopped only by the free plan’s throttle, not by any check, so they would have been sent too.</p>
+        <h4>What actually happened</h4>
+        <p>My expectation held. The spam passed every technical check, so only a person reading the alert or auditing Zap history would catch it.</p>
       </div>
+      </section>
+
+      <section class="logpage" aria-label="Fix and rerun" hidden>
+      <h3>Fix and rerun</h3>
+      <div class="shots">
+        <figure><img src="screenshots/09-fix-url-tested.png" alt="Mon 12:24 PM · Fix tested before publishing: the feed URL now excludes -stream -watch -live. Searching the feed for ‘WATCH’ finds it only in the search terms, not in any story."><figcaption>Mon 12:24 PM · Fix tested before publishing: the feed URL now excludes -stream -watch -live. Searching the feed for ‘WATCH’ finds it only in the search terms, not in any story.</figcaption></figure>
+        <figure><img src="screenshots/09b-fix-published-check.png" alt="Mon 1:44 PM · Published as version 5. Zapier’s check found no new items, so republishing did not resend older stories this time."><figcaption>Mon 1:44 PM · Published as version 5. Zapier’s check found no new items, so republishing did not resend older stories this time.</figcaption></figure>
+        <figure><img src="screenshots/10-after-fix.png" alt="Mon 1:46 PM · Rerun: first run after the fix (version 5), a real news story, successful."><figcaption>Mon 1:46 PM · Rerun: first run after the fix (version 5), a real news story, successful.</figcaption></figure>
+      </div>
+      <div class="callout todo">
+        <h4>Result after the next game day</h4>
+        <p>[To be added]</p>
+      </div>
+      </section>
+
+      <section class="logpage" aria-label="Zap history → CSV" hidden>
+      <h3>Zap history → CSV</h3>
+      <p class="after">Turn a Zap history export (.json) into a spreadsheet. The file is read in your browser only: it is never uploaded or saved. The CSV leaves out email addresses, email bodies and Zapier links.</p>
+      <div class="csvtool">
+        <label class="filepick">
+          <span>Choose Zap history export</span>
+          <input type="file" id="zap-file" accept=".json">
+        </label>
+        <button type="button" id="zap-download" class="primary" disabled>Download CSV</button>
+      </div>
+      <p class="csvsummary" id="zap-summary" role="status"></p>
       </section>
     </div>
     <nav class="pager" aria-label="Agent log pages">
@@ -658,6 +664,83 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   $("log-prev").addEventListener("click", () => showLogPage(logAt - 1, true));
   $("log-next").addEventListener("click", () => showLogPage(logAt + 1, true));
   showLogPage(0);
+
+  /* ---------- Tab 4: copy the agent card ---------- */
+  $("copy-card").addEventListener("click", async () => {
+    const btn = $("copy-card"), text = $("agent-card-text").textContent;
+    try { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; }
+    catch { btn.textContent = "Select and copy"; }
+    setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+  });
+
+  /* ---------- Tab 4: Zap history export → CSV, entirely in the browser ---------- */
+  // ZAPCSV-START
+  // One row per run, sorted by time. Email addresses, bodies and Zapier links never reach the CSV.
+  function zapRuns(data) {
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("not a Zap history export");
+    const pick = (run, ending) => {
+      const key = Object.keys(run).find(k => k.endsWith(ending) && (ending.includes("__raw__") || !k.includes("__raw__")));
+      return key && typeof run[key] === "string" ? run[key] : "";
+    };
+    const safe = v => /[^\s@]+@[^\s@]+\.[^\s@]+/.test(v) || /zapier\.com/i.test(v) ? "" : v;
+    const runs = Object.values(data).filter(r => r && typeof r === "object" && typeof r.date === "string")
+      .map(r => ({
+        when: Date.parse(r.date.replace(/(\.\d{3})\d+/, "$1")),
+        status: String(r.status || ""),
+        headline: safe(pick(r, "__title")),
+        outlet: safe(pick(r, "__raw__source__#text")),
+        published: safe(pick(r, "__pubDate")),
+        link: safe(pick(r, "__link"))
+      }))
+      .filter(r => !Number.isNaN(r.when))
+      .sort((a, b) => a.when - b.when);
+    const seen = new Set();
+    return runs.map(r => {
+      const duplicate = r.link && seen.has(r.link) ? "yes" : "no";
+      if (r.link) seen.add(r.link);
+      const plain = r.headline.normalize("NFKC");
+      return {
+        run_time_sgt: new Date(r.when + 8 * 3600e3).toISOString().slice(0, 19).replace("T", " "),
+        status: r.status, headline: r.headline, outlet: r.outlet, published: r.published, link: r.link,
+        duplicate, spam_flag: /watch|live\s*stream|tv\s*channel/i.test(plain) ? "yes" : "no"
+      };
+    });
+  }
+  function toCsv(rows) {
+    const cols = ["run_time_sgt", "status", "headline", "outlet", "published", "link", "duplicate", "spam_flag"];
+    const cell = v => {
+      let t = String(v ?? "");
+      if (/^[=+\-@]/.test(t)) t = "'" + t;          // stop spreadsheets reading a headline as a formula
+      return /[",\r\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+    };
+    return "﻿" + [cols.join(","), ...rows.map(r => cols.map(c => cell(r[c])).join(","))].join("\r\n") + "\r\n";
+  }
+  // ZAPCSV-END
+  let zapRows = null;
+  $("zap-file").addEventListener("change", async e => {
+    const file = e.target.files[0], out = $("zap-summary");
+    zapRows = null; $("zap-download").disabled = true;
+    if (!file) { out.textContent = ""; return; }
+    try {
+      zapRows = zapRuns(JSON.parse(await file.text()));
+      if (!zapRows.length) throw new Error("no runs");
+      const n = s => zapRows.filter(r => r.status === s).length;
+      out.textContent = `${zapRows.length} runs · ${n("success")} successes · ${n("throttled")} throttled · ` +
+        `${zapRows.filter(r => r.duplicate === "yes").length} duplicates · ${zapRows.filter(r => r.spam_flag === "yes").length} spam flags`;
+      $("zap-download").disabled = false;
+    } catch {
+      zapRows = null;
+      out.textContent = `Could not read ${file.name}. Choose a Zap history export (.json).`;
+    }
+  });
+  $("zap-download").addEventListener("click", () => {
+    if (!zapRows) return;
+    const url = URL.createObjectURL(new Blob([toCsv(zapRows)], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = "zap_history.csv";
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
 
   /* ---------- Tab 4: screenshots ---------- */
   // Swap any screenshot that fails to load for a same-size placeholder naming the missing file.

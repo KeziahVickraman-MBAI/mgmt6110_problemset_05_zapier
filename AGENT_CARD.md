@@ -6,11 +6,11 @@ Vercel link: https://mgmt6110problemset05zapier.vercel.app/
 
 ### AGENT CARD - what it does and does NOT do
 My agent card | WNBA Full Court Press | finished *[18 October 23:28:47]*
-1. The job: Emails each new WNBA news item to a fan or fantasy player (me)
-2. The trigger: A new item in a WNBA RSS feed (RSS by Zapier)
+1. The job: Emails each new WNBA news story to the league office’s communications manager (role-played by me) so no story is missed before media calls
+2. The trigger: A new item in a Google News RSS search for “WNBA” (RSS by Zapier, New Item in Feed)
 3. The tools: RSS by Zapier (New Item in Feed); Email by Zapier (Send Outbound Email)
-4. It must never: Email anyone but me — the To field is fixed to my own address
-5. Where a person checks: I read each email the same day and compare it to the source link
+4. It must never: Email anyone but me — the To field is fixed to my own address, with no mapped recipient
+5. Where a person checks: The comms manager reviews all alerts at 10 AM daily and decides whether the league responds; Zap history is audited weekly against the feed
 ---
 
 ### Tricky case 
