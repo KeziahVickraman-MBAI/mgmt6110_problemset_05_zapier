@@ -5,17 +5,17 @@ Student: Keziah Sherlyn Vanessa Vickraman · Course: MGMT 6110 · Problem Set 5
 Vercel link: https://mgmt6110problemset05zapier.vercel.app/
 
 ### AGENT CARD - what it does and does NOT do
-My agent card | Full-Court Press | finished *[18 October 23:28:47]*
+My agent card | Full-Court Press | finished [18 October 23:28:47]
 1. The job: Emails each new WNBA news story to the league office’s communications manager (role-played by me) so no story is missed before media calls
 2. The trigger: A new item in a Google News RSS search for “WNBA” (RSS by Zapier, New Item in Feed)
 3. The tools: RSS by Zapier (New Item in Feed); Email by Zapier (Send Outbound Email)
-4. It must never: Email anyone but me — the To field is fixed to my own address, with no mapped recipient
+4. It must never: Email anyone but me—the To field is fixed to my own address, with no mapped recipient
 5. Where a person checks: The comms manager reviews all alerts at 10 AM daily and decides whether the league responds; Zap history is audited weekly against the feed
 ---
 
 ### Tricky case 
 `Tricky case`: 
---> fake live-stream pages in the news feed
+--> <mark>fake live-stream pages in the news feed</mark>
 
 --> Expectation written: 18 October 23:55, before the next WNBA Finals game
 
@@ -70,4 +70,16 @@ I answer the second question differently.
 --> I see an escalated dispute as work either of them can do alone, and in practice a manager handles it alone. By the time a dispute is escalated, it’s usually a <mark>single, high-stakes case rather than a high-volume process</mark>. The manager can resolve it without AI. AI helps by preparing the case: summarizing the history, finding similar past cases and the relevant policy, and drafting two or three settlement options. The person then makes the decision and is accountable for it. That matches the Week 7 deck’s bottom-right example of a banker planning a hard negotiation while AI drafts the options.
 
 My group’s placement would be right under different conditions. If disputes arrived in large numbers and agents triaged them, gathered evidence and proposed resolutions, with a person judging only the contested ones, the work would become a process that people and AI run together, and Agents run it, a person judges would fit. So our disagreement is really about volume and design: for a single escalated case, the person decides with AI alongside.
+
 ---
+
+### Honest limitation
+I am currently flooded with news articles for each and every update. I am aware of this—but for the purpose of this exercise (on the free tier and one trigger and action -> 2 step process) I will push this out first. 
+
+To make it synthesizable now. I am able to convert the exported JSON zap history into a csv file which I can further analyse. At this stage, leaving the AI completely out of it at the moment. But for future iterations, definitely an area which I would wish to expand on further. Hopefully in week 8 where we learn more on routines and coding up our own agents. 
+
+
+### Reflective thoughts and beyond 
+I am still interested in the sports space heavily and wish to use this as a stepping stone for the things I wish to analyse as I learn more concepts and go deeper into this intelligence space. I started my pet projects in analytics (clustering using wnba data). Albeit naive and so out of place at the time (using classical k-principle), the sentiment still holds. Hence, I wish to obtain my data and find out a way to approach the efficient frontier using metgids we learn here. 
+
+As usual, I am very very hungry Prof Roh and looking to learn more. 
